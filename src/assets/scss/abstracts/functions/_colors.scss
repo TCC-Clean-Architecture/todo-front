@@ -1,0 +1,48 @@
+@use 'sass:math';
+
+@use '../variables' as var;
+
+// Tint a color: mix a color with white
+@function tint-color($color, $weight) {
+  @return mix(var.$c-white, $color, $weight);
+}
+
+// Shade a color: mix a color with black
+@function shade-color($color, $weight) {
+  @return mix(var.$c-black, $color, $weight);
+}
+
+// Shade the color if the weight is positive, else tint it
+@function shift-color($color, $weight) {
+  @return if(
+    $weight > 0,
+    shade-color($color, $weight),
+    tint-color($color, -$weight)
+  );
+}
+
+@function lightness-contrast($color) {
+  $red: red($color);
+  $green: green($color);
+  $blue: blue($color);
+  $yiq: math.div(($red * 299) + ($green * 587) + ($blue * 114), 1000);
+  @return $yiq;
+}
+
+@function contrast-color($color) {
+  $contrast: lightness-contrast($color);
+  @if ($contrast >= 128) {
+    @return var.$c-dark; // return black if color is light
+  } @else {
+    @return var.$c-white; // return white if color is dark
+  }
+}
+
+@function contrast-color-inverse($color) {
+  $contrast: lightness-contrast($color);
+  @if ($contrast >= 128) {
+    @return var.$c-white; // return white if color is dark
+  } @else {
+    @return var.$c-dark; // return black if color is light
+  }
+}

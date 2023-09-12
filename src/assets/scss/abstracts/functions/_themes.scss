@@ -1,0 +1,41 @@
+@use 'sass:map';
+@use 'sass:meta';
+
+@use '../variables' as var;
+@use 'colors' as *;
+
+// generate theme list merging default $theme-color-properties and custom properties;
+@function generate-theme-properties($properties: ()) {
+  $merged-properties: map.deep-merge(var.$theme-color-properties, $properties);
+  $aux-theme: ();
+  @each $theme-name, $color in var.$theme-colors {
+    $aux-properties: ();
+    @each $property, $property-options in $merged-properties {
+      $value: calc-theme-color($property-options, $color);
+      $aux-properties: map.set($aux-properties, $property, $value);
+    }
+    $aux-theme: map.set($aux-theme, $theme-name, $aux-properties);
+  }
+  @return $aux-theme;
+}
+
+// Calc color value applying functions
+@function calc-theme-color($options, $color) {
+  @if map.has-key($options, 'function') {
+    $function-name: map.get($options, 'function');
+    $function: meta.get-function($function-name);
+    $args: map.get($options, 'args');
+    $value: if(
+      map.has-key($options, 'args'),
+      meta.call($function, $color, $args...),
+      meta.call($function, $color)
+    );
+    @return $value;
+  }
+  @return $color;
+}
+
+// Get css variable color locate in $themes list
+@function get-theme-color($theme, $property) {
+  @return map.get(var.$themes, $theme, $property);
+}

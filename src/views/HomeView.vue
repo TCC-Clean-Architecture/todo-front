@@ -1,7 +1,14 @@
 <template>
+	<header>
+		<nav>
+			<RouterLink to="/">Home</RouterLink>
+		</nav>
+	</header>
 	<main>
-		<h1>Hello From HomeView</h1>
+		<HelloWorld msg="You did it!" />
 	</main>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import HelloWorld from '@/components/HelloWorld.vue';
+</script>

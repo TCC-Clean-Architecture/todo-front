@@ -1,0 +1,63 @@
+////////////////////////////////
+// Gray-Scale
+$c-white: #ffffff;
+$c-gray-98: #f3f3f3;
+$c-gray-97: #efefef;
+$c-gray-95: #ededed;
+$c-gray-93: #e8e8e8;
+$c-gray-92: #e7e7e7;
+$c-gray-90: #e5e5e5;
+$c-gray-85: #d9d9d9;
+$c-gray-80: #cccccc;
+$c-gray-75: #c4c4c4;
+$c-gray-70: #b6b6b6;
+$c-gray-65: #9e9e9e;
+$c-gray-60: #999999;
+$c-gray-55: #8a8a8a;
+$c-gray-50: #808080;
+$c-gray-45: #727272;
+$c-gray-40: #686868;
+$c-gray-30: #4b4b4b;
+$c-gray-20: #363636;
+$c-gray-15: #222222;
+$c-gray-10: #171717;
+$c-black: #000000;
+
+////////////////////////////////
+// Colors
+$c-success: #5dc90a;
+$c-danger: #e62737;
+$c-warning: #ff9f10;
+$c-info: #49b9f1;
+$c-loving: #e56ecc;
+$c-neutral: #e0e3f0;
+
+////////////////////////////////
+// Light-n-Dark-Colors
+$c-light: #e0e3f0;
+$c-lighter: #eff0f3;
+$c-lightest: #f8f7f9;
+$c-dark: #323232;
+$c-darker: #252525;
+$c-darkest: #171717;
+
+////////////////////////////////
+// Primary-Colors
+$c-primary: #9036aa;
+$c-primary-dark: #6c2082;
+$c-primary-light: #c267dc;
+
+////////////////////////////////
+// Secondary-Colors
+$c-secondary: #2a3de4;
+$c-secondary-light: #6e6fff;
+$c-secondary-dark: #102670;
+
+////////////////////////////////
+// Gradient-Colors
+$gt-purple-180: linear-gradient(180deg, #9a31ff 0%, #706dff 100%);
+$gt-gray-180: linear-gradient(
+  180deg,
+  rgba(253, 253, 254, 1) 0%,
+  rgba(238, 240, 248, 1) 100%
+);

@@ -1,0 +1,29 @@
+@use '../abstracts' as *;
+
+@use 'default';
+@use 'dark';
+
+$themes-variables: (
+  'default': default.$theme,
+  'dark': dark.$theme,
+);
+
+@each $theme, $properties in $themes-variables {
+  @if $theme == default {
+    :root {
+      @include cssvar-by-properties($properties);
+      color-scheme: light;
+    }
+  } @else if $theme == dark {
+    @media (prefers-color-scheme: #{$theme}) {
+      .#{$theme} {
+        @include cssvar-by-properties($properties);
+        color-scheme: dark;
+      }
+    }
+  } @else {
+    .#{$theme} {
+      @include cssvar-by-properties($properties);
+    }
+  }
+}

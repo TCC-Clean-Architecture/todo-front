@@ -1,0 +1,50 @@
+@use 'sass:map';
+@use '../abstracts' as *;
+
+$dark-theme: (
+  'bg': (
+    #{$default-property-name}: $c-dark,
+    'elv': $c-dark,
+    'elv-up': $c-darker,
+    'elv-down': $c-darkest,
+    'elv-mute': $c-dark,
+    'soft': $c-darker,
+    'soft-up': $c-dark,
+    'soft-down': $c-darkest,
+    'soft-mute': $c-dark,
+    'alt': $c-gray-90,
+  ),
+  'neutral': $c-darker,
+  'neutral-inverse': $c-lightest,
+  'text': (
+    '1': $c-white,
+    '2': $c-lighter,
+    '3': $c-lightest,
+    'inverse-1': $c-dark,
+    'inverse-2': $c-darker,
+    'inverse-3': $c-darkest,
+  ),
+  'mute': (
+    #{$default-property-name}: $c-gray-20,
+    'light': $c-gray-60,
+    'lighter': $c-gray-70,
+    'dark': $c-gray-40,
+    'darker': $c-gray-30,
+  ),
+);
+
+$dark-theme-colors: generate-theme-properties(
+  (
+    'dark': (
+      'args': 20%,
+    ),
+    'darker': (
+      'args': 30%,
+    ),
+    'darkest': (
+      'args': 50%,
+    ),
+  )
+);
+
+$theme: map.deep-merge($dark-theme-colors, $dark-theme);
