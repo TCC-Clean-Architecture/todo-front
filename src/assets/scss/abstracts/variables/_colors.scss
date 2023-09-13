@@ -34,30 +34,17 @@ $c-neutral: #e0e3f0;
 
 ////////////////////////////////
 // Light-n-Dark-Colors
-$c-light: #e0e3f0;
+$c-light: #e9eeff;
 $c-lighter: #eff0f3;
-$c-lightest: #f8f7f9;
+$c-lightest: #f4f7fe;
 $c-dark: #323232;
 $c-darker: #252525;
 $c-darkest: #171717;
 
 ////////////////////////////////
 // Primary-Colors
-$c-primary: #9036aa;
-$c-primary-dark: #6c2082;
-$c-primary-light: #c267dc;
+$c-primary: #2b3674;
 
 ////////////////////////////////
 // Secondary-Colors
-$c-secondary: #2a3de4;
-$c-secondary-light: #6e6fff;
-$c-secondary-dark: #102670;
-
-////////////////////////////////
-// Gradient-Colors
-$gt-purple-180: linear-gradient(180deg, #9a31ff 0%, #706dff 100%);
-$gt-gray-180: linear-gradient(
-  180deg,
-  rgba(253, 253, 254, 1) 0%,
-  rgba(238, 240, 248, 1) 100%
-);
+$c-secondary: #4318ff;
