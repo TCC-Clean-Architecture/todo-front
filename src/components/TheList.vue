@@ -1,22 +1,34 @@
 <template>
 	<section class="list">
 		<h1 class="list__title">Lista de Atividades</h1>
-		<ol class="list__wrapper">
-			<li class="list__task" v-for="(task, index) in tasks" :key="index">
-				<div class="task">
-					<button class="task__draggable"><IconGripSquares /></button>
-					<div class="task__content">
-						<h3 class="task__name">{{ task.name }}</h3>
-						<p class="task__description">
-							{{ task.description }}
-						</p>
-						<span class="task__status">{{ task.status }}</span>
+		<Draggable
+			tag="ol"
+			class="list__wrapper"
+			handle=".task__handle"
+			v-model="tasks"
+			group="tasks"
+			item-key="id"
+			:animation="200"
+		>
+			<template #item="{ element }">
+				<li class="list__task">
+					<div class="task">
+						<button class="task__handle"><IconGripSquares /></button>
+						<div class="task__content">
+							<h3 class="task__name">{{ element.name }}</h3>
+							<p class="task__description">
+								{{ element.description }}
+							</p>
+							<span class="task__status">{{ element.status }}</span>
+						</div>
+						<button class="task__edit" @click="showNewTaskModal = true"><IconPencil /></button>
 					</div>
-					<button class="task__edit" @click="showNewTaskModal = true"><IconPencil /></button>
-				</div>
-			</li>
-			<button class="list__new-task" @click="showNewTaskModal = true"><IconPlus /></button>
-		</ol>
+				</li>
+			</template>
+			<template #footer>
+				<button class="list__new-task" @click="showNewTaskModal = true"><IconPlus /></button>
+			</template>
+		</Draggable>
 	</section>
 	<NewTaskModal v-model="showNewTaskModal" />
 </template>
@@ -26,23 +38,27 @@ import IconGripSquares from '@/components/icons/IconGripSquares.vue';
 import IconPencil from '@/components/icons/IconPencil.vue';
 import IconPlus from '@/components/icons/IconPlus.vue';
 import NewTaskModal from '@/components/modals/NewTaskModal.vue';
+import Draggable from 'vuedraggable';
 
 import { ref } from 'vue';
 
-const showNewTaskModal = ref<boolean>(true);
+const showNewTaskModal = ref<boolean>(false);
 
 const tasks = [
 	{
+		id: 1,
 		name: `Option to "use local/server version" feature`,
 		description: `It usually displays this message when you close an unsaved page when you do it on purpose, and it's getting frustrated to see this every time.`,
 		status: 'Status',
 	},
 	{
+		id: 2,
 		name: `Option to "use local/server version" feature`,
 		description: `It usually displays this message when you close an unsaved page when you do it on purpose, and it's getting frustrated to see this every time.`,
 		status: 'Status',
 	},
 	{
+		id: 3,
 		name: `Option to "use local/server version" feature`,
 		description: `It usually displays this message when you close an unsaved page when you do it on purpose, and it's getting frustrated to see this every time.`,
 		status: 'Status',
@@ -167,7 +183,7 @@ const tasks = [
 		border-radius: 0.625rem;
 	}
 
-	&__draggable {
+	&__handle {
 		background-color: var(--clr-bg-soft-up);
 		color: var(--clr-secondary);
 
