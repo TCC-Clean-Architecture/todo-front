@@ -16,6 +16,7 @@
     "@vueuse/core": "^10.4.1",
     "pinia": "^2.1.6",
     "vue": "^3.3.4",
+    "vue-multiselect": "^3.0.0-beta.2",
     "vue-router": "^4.2.4",
     "vuedraggable": "^4.1.0"
   },

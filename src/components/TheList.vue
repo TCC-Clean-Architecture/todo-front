@@ -140,6 +140,7 @@ const tasks = [
 	min-height: 13rem;
 	padding: 0.75rem;
 
+	background-color: var(--clr-bg-soft);
 	box-shadow: $elevation-2;
 	border-radius: 0.375rem;
 

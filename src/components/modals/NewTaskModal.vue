@@ -27,7 +27,17 @@
 						rows="5"
 					></textarea>
 				</div>
-				<BaseInput v-model="form.status" type="text" name="name" variant="outline" label="Status" />
+				<div class="field">
+					<label
+						id="input-description-label"
+						class="field__label"
+						aria-label="input-description"
+						for="input-description"
+					>
+						Status
+					</label>
+					<BaseMultiselect v-model="form.status" :options="options.status" />
+				</div>
 				<div class="new-task-modal__actions">
 					<button class="new-task-modal__create">Criar</button>
 					<button class="new-task-modal__cancel" @click="show = false">Cancelar</button>
@@ -40,6 +50,7 @@
 <script lang="ts" setup>
 import BaseModal from '@/components/BaseModal.vue';
 import BaseInput from '@/components/BaseInput.vue';
+import BaseMultiselect from '@/components/BaseMultiselect.vue';
 
 import { reactive } from 'vue';
 import { useVModel } from '@vueuse/core';
@@ -66,6 +77,27 @@ const form: IForm = reactive({
 	title: '',
 	description: '',
 	status: '',
+});
+
+interface IOptions {
+	status: Array<{ value: string; text: string }>;
+}
+
+const options: IOptions = reactive({
+	status: [
+		{
+			value: 'new',
+			text: 'Novo',
+		},
+		{
+			value: 'done',
+			text: 'Pronto',
+		},
+		{
+			value: 'blocked',
+			text: 'Bloqueado',
+		},
+	],
 });
 
 const show = useVModel(props, 'modelValue', emit);
