@@ -1,7 +1,7 @@
 <template>
 	<BaseModal class="new-task-modal" v-model="show">
 		<template #title>
-			<h2 class="new-task-modal__title">Criar novo afazer</h2>
+			<h2 class="new-task-modal__title">Criar novo a fazer</h2>
 		</template>
 		<div class="new-task-modal__content">
 			<p class="new-task-modal__description">
@@ -39,7 +39,7 @@
 					<BaseMultiselect v-model="form.status" :options="options.status" />
 				</div>
 				<div class="new-task-modal__actions">
-					<button class="new-task-modal__create">Criar</button>
+					<button class="new-task-modal__create" @click="createTodo()">Criar</button>
 					<button class="new-task-modal__cancel" @click="show = false">Cancelar</button>
 				</div>
 			</form>
@@ -54,6 +54,7 @@ import BaseMultiselect from '@/components/BaseMultiselect.vue';
 
 import { reactive } from 'vue';
 import { useVModel } from '@vueuse/core';
+import { useTodoListStore } from '@/stores/todo-list';
 
 interface IProps {
 	modelValue: boolean;
@@ -67,40 +68,56 @@ const emit = defineEmits<{
 	(e: 'update:modelValue', value: boolean): void;
 }>();
 
+interface IMultiselectModel {
+	value: string;
+	text: string;
+}
+
 interface IForm {
-	title: string;
-	description: string;
-	status: string;
+	title: string | undefined;
+	description: string | undefined;
+	status: IMultiselectModel | undefined;
 }
 
 const form: IForm = reactive({
-	title: '',
-	description: '',
-	status: '',
+	title: undefined,
+	description: undefined,
+	status: undefined,
 });
 
 interface IOptions {
-	status: Array<{ value: string; text: string }>;
+	status: Array<IMultiselectModel>;
 }
 
 const options: IOptions = reactive({
 	status: [
 		{
-			value: 'new',
-			text: 'Novo',
+			value: 'todo',
+			text: 'A fazer',
 		},
 		{
 			value: 'done',
 			text: 'Pronto',
 		},
 		{
-			value: 'blocked',
-			text: 'Bloqueado',
+			value: 'inprogress',
+			text: 'Em progresso',
 		},
 	],
 });
 
 const show = useVModel(props, 'modelValue', emit);
+const todoListStore = useTodoListStore();
+
+const createTodo = () => {
+	if (!(form.title && form.description && form.status)) return;
+	const requestBody = {
+		name: form.title,
+		description: form.description,
+		status: form.status.value,
+	};
+	todoListStore['CREATE_TODO'](requestBody);
+};
 </script>
 
 <style lang="scss" scoped>

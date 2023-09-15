@@ -19,7 +19,9 @@
 							<p class="task__description">
 								{{ element.description }}
 							</p>
-							<span class="task__status">{{ element.status }}</span>
+							<span class="task__status" :class="{ [`task__status--${element.status}`]: true }">
+								{{ getStatusName(element.status) }}
+							</span>
 						</div>
 						<button class="task__edit" @click="showNewTaskModal = true"><IconPencil /></button>
 					</div>
@@ -40,11 +42,21 @@ import IconPlus from '@/components/icons/IconPlus.vue';
 import NewTaskModal from '@/components/modals/NewTaskModal.vue';
 import Draggable from 'vuedraggable';
 
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useTodoListStore } from '@/stores/todo-list';
+import getAvailableStatus from '@/utils/getAvailableStatus';
 
 const showNewTaskModal = ref<boolean>(false);
+const todoListStore = useTodoListStore();
 
-const tasks = [
+type ITodo = {
+	id: string | number;
+	name: string;
+	description: string;
+	status: string;
+};
+
+const tasks = ref<ITodo[]>([
 	{
 		id: 1,
 		name: `Option to "use local/server version" feature`,
@@ -63,7 +75,26 @@ const tasks = [
 		description: `It usually displays this message when you close an unsaved page when you do it on purpose, and it's getting frustrated to see this every time.`,
 		status: 'Status',
 	},
-];
+]);
+
+const getStatusName = (status: string) => {
+	return getAvailableStatus(status).name;
+};
+
+const getTodos = () => {
+	todoListStore['GET_TODOS']().then((todos) => {
+		tasks.value = todos.map((todo) => ({
+			id: todo._id,
+			name: todo.name,
+			description: todo.description,
+			status: getAvailableStatus(todo.status).id,
+		}));
+	});
+};
+
+onMounted(() => {
+	getTodos();
+});
 </script>
 
 <style lang="scss" scoped>
@@ -180,8 +211,22 @@ const tasks = [
 		font-weight: 600;
 		color: var(--clr-text-inverse-1);
 
-		background-color: var(--clr-info);
+		background-color: var(--clr-primary);
 		border-radius: 0.625rem;
+
+		&--done {
+			background-color: var(--clr-success);
+		}
+		&--inprogress {
+			background-color: var(--clr-warning);
+		}
+		&--todo {
+			background-color: var(--clr-info);
+		}
+		&--unknown {
+			background-color: var(--clr-mute);
+			color: var(--clr-mute-darker);
+		}
 	}
 
 	&__handle {

@@ -1,7 +1,7 @@
 <template>
 	<Teleport to="#modals">
 		<Transition name="modal-fade">
-			<dialog class="modal" v-if="show">
+			<dialog class="modal" :class="$attrs.class" v-if="show">
 				<div class="modal__backdrop"></div>
 				<div class="modal__card">
 					<slot name="header">
@@ -34,7 +34,6 @@ import { useVModel } from '@vueuse/core';
 interface IProps {
 	modelValue: boolean;
 	width?: string;
-	height?: string;
 	title?: string;
 }
 
@@ -46,6 +45,10 @@ const props = withDefaults(defineProps<IProps>(), {
 const emit = defineEmits<{
 	(e: 'update:modelValue', value: boolean): void;
 }>();
+
+defineOptions({
+	inheritAttrs: false,
+});
 
 const show = useVModel(props, 'modelValue', emit);
 </script>
@@ -64,6 +67,7 @@ const show = useVModel(props, 'modelValue', emit);
 	min-height: 100vh;
 
 	background: transparent;
+	border: none;
 
 	&__backdrop {
 		position: absolute;
@@ -79,7 +83,6 @@ const show = useVModel(props, 'modelValue', emit);
 		flex-direction: column;
 
 		width: v-bind(width);
-		height: v-bind(height);
 
 		background-color: var(--clr-bg-soft);
 		border-radius: 1rem;

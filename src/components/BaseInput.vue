@@ -116,7 +116,7 @@ const props = withDefaults(defineProps<IProps>(), {
 	type: 'text',
 });
 
-/* -- emits -- */
+/* -- Emits -- */
 
 const emit = defineEmits<{
 	(e: 'update:modelValue', value: boolean): void;
