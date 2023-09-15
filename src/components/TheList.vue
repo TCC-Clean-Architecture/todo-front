@@ -12,18 +12,24 @@
 						</p>
 						<span class="task__status">{{ task.status }}</span>
 					</div>
-					<button class="task__edit"><IconPencil /></button>
+					<button class="task__edit" @click="showNewTaskModal = true"><IconPencil /></button>
 				</div>
 			</li>
-			<button class="list__new-task"><IconPlus /></button>
+			<button class="list__new-task" @click="showNewTaskModal = true"><IconPlus /></button>
 		</ol>
 	</section>
+	<NewTaskModal v-model="showNewTaskModal" />
 </template>
 
 <script lang="ts" setup>
 import IconGripSquares from '@/components/icons/IconGripSquares.vue';
 import IconPencil from '@/components/icons/IconPencil.vue';
 import IconPlus from '@/components/icons/IconPlus.vue';
+import NewTaskModal from '@/components/modals/NewTaskModal.vue';
+
+import { ref } from 'vue';
+
+const showNewTaskModal = ref<boolean>(true);
 
 const tasks = [
 	{
