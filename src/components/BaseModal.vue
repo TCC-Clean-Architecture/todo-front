@@ -3,11 +3,11 @@
 		<Transition name="modal-fade">
 			<dialog class="modal" :class="$attrs.class" v-if="show">
 				<div class="modal__backdrop"></div>
-				<div class="modal__card">
+				<div class="modal__card" :style="{ width: width }">
 					<slot name="header">
 						<div class="modal__header">
 							<slot name="title">
-								<h2 class="modal__title" v-text="title"></h2>
+								<h2 v-if="title" class="modal__title" v-text="title"></h2>
 							</slot>
 							<slot name="close-button">
 								<button class="modal__close" @click="show = false"><IconXMark /></button>
@@ -29,6 +29,7 @@
 <script lang="ts" setup>
 import IconXMark from '@/components/icons/IconXMark.vue';
 
+import { watch } from 'vue';
 import { useVModel } from '@vueuse/core';
 
 interface IProps {
@@ -44,6 +45,8 @@ const props = withDefaults(defineProps<IProps>(), {
 
 const emit = defineEmits<{
 	(e: 'update:modelValue', value: boolean): void;
+	(e: 'open'): void;
+	(e: 'close'): void;
 }>();
 
 defineOptions({
@@ -51,6 +54,15 @@ defineOptions({
 });
 
 const show = useVModel(props, 'modelValue', emit);
+
+watch(
+	show,
+	async (bool) => {
+		if (bool) emit('open');
+		else emit('close');
+	},
+	{ immediate: true },
+);
 </script>
 
 <style lang="scss" scoped>
@@ -81,8 +93,6 @@ const show = useVModel(props, 'modelValue', emit);
 	&__card {
 		display: flex;
 		flex-direction: column;
-
-		width: v-bind(width);
 
 		background-color: var(--clr-bg-soft);
 		border-radius: 1rem;

@@ -23,30 +23,77 @@
 								{{ getStatusName(element.status) }}
 							</span>
 						</div>
-						<button class="task__edit" @click="showNewTaskModal = true"><IconPencil /></button>
+						<div class="task__actions">
+							<button class="task__action" @click="openRemoveTaskModal(element.id)">
+								<IconTrash />
+							</button>
+							<button class="task__action" @click="openNewEditTaskModal(element.id)">
+								<IconPencil />
+							</button>
+						</div>
 					</div>
 				</li>
 			</template>
 			<template #footer>
-				<button class="list__new-task" @click="showNewTaskModal = true"><IconPlus /></button>
+				<button class="list__new-task" @click="openNewEditTaskModal()"><IconPlus /></button>
 			</template>
 		</Draggable>
 	</section>
-	<NewTaskModal v-model="showNewTaskModal" />
+	<NewEditTaskModal
+		v-model="modals.newEditTask.modalOpen"
+		:id="modals.newEditTask.props.id"
+		:callback="modals.newEditTask.props.callback"
+	/>
+	<RemoveTaskModal
+		v-model="modals.removeTask.modalOpen"
+		:id="modals.removeTask.props.id"
+		:callback="modals.removeTask.props.callback"
+	/>
 </template>
 
 <script lang="ts" setup>
 import IconGripSquares from '@/components/icons/IconGripSquares.vue';
 import IconPencil from '@/components/icons/IconPencil.vue';
+import IconTrash from '@/components/icons/IconTrash.vue';
 import IconPlus from '@/components/icons/IconPlus.vue';
-import NewTaskModal from '@/components/modals/NewTaskModal.vue';
+import NewEditTaskModal from '@/components/modals/NewEditTaskModal.vue';
+import RemoveTaskModal from '@/components/modals/RemoveTaskModal.vue';
 import Draggable from 'vuedraggable';
 
-import { ref, onMounted } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import { useTodoListStore } from '@/stores/todo-list';
 import getAvailableStatus from '@/utils/getAvailableStatus';
 
-const showNewTaskModal = ref<boolean>(false);
+interface IGenericModal<T = undefined> {
+	modalOpen: boolean;
+	props: T;
+}
+
+interface IModalProps {
+	id?: string;
+	callback?: () => void;
+}
+
+interface IModals {
+	newEditTask: IGenericModal<IModalProps>;
+	removeTask: IGenericModal<IModalProps>;
+}
+
+const modals: IModals = reactive({
+	newEditTask: {
+		modalOpen: false,
+		props: {
+			callback: undefined,
+		},
+	},
+	removeTask: {
+		modalOpen: false,
+		props: {
+			id: undefined,
+			callback: undefined,
+		},
+	},
+});
 const todoListStore = useTodoListStore();
 
 type ITodo = {
@@ -77,12 +124,30 @@ const tasks = ref<ITodo[]>([
 	},
 ]);
 
+const openRemoveTaskModal = (id: string) => {
+	modals.removeTask.props.id = id;
+	modals.removeTask.modalOpen = true;
+	modals.removeTask.props.callback = () => removeTodo(id);
+};
+
+const openNewEditTaskModal = (id?: string) => {
+	modals.newEditTask.props.id = id;
+	modals.newEditTask.modalOpen = true;
+	modals.newEditTask.props.callback = () => getTodos();
+};
+
+const removeTodo = (id: string) => {
+	if (id) {
+		tasks.value = tasks.value.filter((t) => t.id !== id);
+	}
+};
+
 const getStatusName = (status: string) => {
 	return getAvailableStatus(status).name;
 };
 
 const getTodos = () => {
-	todoListStore['GET_TODOS']().then((todos) => {
+	todoListStore.GET_TODOS().then((todos) => {
 		tasks.value = todos.map((todo) => ({
 			id: todo._id,
 			name: todo.name,
@@ -255,7 +320,13 @@ onMounted(() => {
 		}
 	}
 
-	&__edit {
+	&__actions {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+
+	&__action {
 		width: 1.5rem;
 		height: 1.5rem;
 		padding: 0.125rem;

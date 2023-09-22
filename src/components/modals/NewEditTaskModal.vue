@@ -1,12 +1,10 @@
 <template>
-	<BaseModal class="new-task-modal" v-model="show">
+	<BaseModal class="new-task-modal" v-model="show" @open="getTodo" @close="resetModal">
 		<template #title>
-			<h2 class="new-task-modal__title">Criar novo a fazer</h2>
+			<h2 class="new-task-modal__title" v-text="componentInfo.title"></h2>
 		</template>
 		<div class="new-task-modal__content">
-			<p class="new-task-modal__description">
-				Preencha os campos para criar um novo elemento na lista
-			</p>
+			<p class="new-task-modal__description" v-text="componentInfo.description"></p>
 			<form class="new-task-modal__form" @submit.prevent>
 				<BaseInput v-model="form.title" type="text" name="name" variant="outline" label="Título" />
 				<div class="field">
@@ -39,7 +37,11 @@
 					<BaseMultiselect v-model="form.status" :options="options.status" />
 				</div>
 				<div class="new-task-modal__actions">
-					<button class="new-task-modal__create" @click="createTodo()">Criar</button>
+					<button
+						class="new-task-modal__create"
+						@click="onSave()"
+						v-text="componentInfo.button"
+					></button>
 					<button class="new-task-modal__cancel" @click="show = false">Cancelar</button>
 				</div>
 			</form>
@@ -52,12 +54,15 @@ import BaseModal from '@/components/BaseModal.vue';
 import BaseInput from '@/components/BaseInput.vue';
 import BaseMultiselect from '@/components/BaseMultiselect.vue';
 
-import { reactive } from 'vue';
+import { reactive, computed } from 'vue';
 import { useVModel } from '@vueuse/core';
 import { useTodoListStore } from '@/stores/todo-list';
+import getAvailableStatus from '@/utils/getAvailableStatus';
 
 interface IProps {
 	modelValue: boolean;
+	callback?: () => void;
+	id?: string;
 }
 
 const props = withDefaults(defineProps<IProps>(), {
@@ -109,14 +114,61 @@ const options: IOptions = reactive({
 const show = useVModel(props, 'modelValue', emit);
 const todoListStore = useTodoListStore();
 
-const createTodo = () => {
+const componentInfo = computed(() => {
+	if (props.id) {
+		return {
+			title: 'Editar a fazer',
+			description: 'Atualize os campos do seguinte item',
+			button: 'Salvar',
+		};
+	}
+	return {
+		title: 'Criar novo a fazer',
+		description: 'Preencha os campos para criar um novo elemento na lista',
+		button: 'Criar',
+	};
+});
+
+const closeModal = () => {
+	show.value = false;
+};
+
+const resetModal = () => {
+	form.title = undefined;
+	form.description = undefined;
+	form.status = undefined;
+};
+
+const getTodo = () => {
+	if (!props.id) return;
+	todoListStore.GET_TODO(props.id).then((todo) => {
+		form.title = todo.name;
+		form.description = todo.description;
+		const status = getAvailableStatus(todo.status);
+		form.status = {
+			value: status.id,
+			text: status.name,
+		};
+	});
+};
+
+const onSave = () => {
 	if (!(form.title && form.description && form.status)) return;
 	const requestBody = {
 		name: form.title,
 		description: form.description,
 		status: form.status.value,
 	};
-	todoListStore['CREATE_TODO'](requestBody);
+	if (props.id) {
+		return todoListStore.EDIT_TODO(props.id, requestBody).then(() => {
+			closeModal();
+			if (props.callback) props.callback();
+		});
+	}
+	todoListStore.CREATE_TODO(requestBody).then(() => {
+		closeModal();
+		if (props.callback) props.callback();
+	});
 };
 </script>
 

@@ -12,20 +12,40 @@ type ITodo = {
 	createdAt: string;
 };
 
-type ITodoList = Array<ITodo>;
+interface IReponseMessage<T> {
+	content: T;
+	description: string;
+	message: string;
+	statusCode: number;
+	type: string;
+}
 
 type ITodoBasic = Omit<ITodo, '_id' | 'createdAt'>;
 
 export const useTodoListStore = defineStore('todo-list', {
 	actions: {
-		GET_TODOS(): Promise<ITodoList> {
+		GET_TODOS(): Promise<ITodo[]> {
 			return new Promise((resolve, reject) => {
 				http({
 					method: 'GET',
-					url: '/todo',
+					url: '/todos',
 				})
-					.then((response: AxiosResponse<ITodoList>) => {
-						resolve(response.data);
+					.then((response: AxiosResponse<IReponseMessage<ITodo[]>>) => {
+						resolve(response.data.content);
+					})
+					.catch((error: AxiosError) => {
+						reject(error);
+					});
+			});
+		},
+		GET_TODO(id: string): Promise<ITodo> {
+			return new Promise((resolve, reject) => {
+				http({
+					method: 'GET',
+					url: `/todos/${id}`,
+				})
+					.then((response: AxiosResponse<IReponseMessage<ITodo>>) => {
+						resolve(response.data.content);
 					})
 					.catch((error: AxiosError) => {
 						reject(error);
@@ -36,11 +56,40 @@ export const useTodoListStore = defineStore('todo-list', {
 			return new Promise((resolve, reject) => {
 				http({
 					method: 'POST',
-					url: '/todo',
+					url: '/todos',
 					data: body,
 				})
-					.then((response: AxiosResponse<ITodo>) => {
-						resolve(response.data);
+					.then((response: AxiosResponse<IReponseMessage<ITodo>>) => {
+						resolve(response.data.content);
+					})
+					.catch((error: AxiosError) => {
+						reject(error);
+					});
+			});
+		},
+		EDIT_TODO(id: string, body: ITodoBasic): Promise<ITodo> {
+			return new Promise((resolve, reject) => {
+				http({
+					method: 'PUT',
+					url: `/todos/${id}`,
+					data: body,
+				})
+					.then((response: AxiosResponse<IReponseMessage<ITodo>>) => {
+						resolve(response.data.content);
+					})
+					.catch((error: AxiosError) => {
+						reject(error);
+					});
+			});
+		},
+		DELETE_TODO(id: string): Promise<Pick<ITodo, '_id'>> {
+			return new Promise((resolve, reject) => {
+				http({
+					method: 'DELETE',
+					url: `/todos/${id}`,
+				})
+					.then((response: AxiosResponse<IReponseMessage<Pick<ITodo, '_id'>>>) => {
+						resolve(response.data.content);
 					})
 					.catch((error: AxiosError) => {
 						reject(error);
