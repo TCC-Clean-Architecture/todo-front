@@ -1,0 +1,67 @@
+@use 'abstracts' as *;
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+
+.container-fluid {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat($grid-columns, 1fr);
+  grid-auto-rows: minmax(500px, 1fr);
+}
+
+@each $key, $val in $grid-gaps {
+  .row-gap-#{$key} {
+    padding-block: $val;
+    gap: $val * 2;
+  }
+}
+
+@include xs {
+  @for $i from 1 through $grid-columns {
+    .col-#{$i}-xs {
+      grid-column: span #{$i};
+    }
+  }
+}
+
+@include sm {
+  @for $i from 1 through $grid-columns {
+    .col-#{$i}-sm {
+      grid-column: span #{$i};
+    }
+  }
+}
+
+@include md {
+  @for $i from 1 through $grid-columns {
+    .col-#{$i}-md {
+      grid-column: span #{$i};
+    }
+  }
+}
+
+@include lg {
+  @for $i from 1 through $grid-columns {
+    .col-#{$i}-lg {
+      grid-column: span #{$i};
+    }
+  }
+}
+
+@include xl {
+  @for $i from 1 through $grid-columns {
+    .col-#{$i}-xl {
+      grid-column: span #{$i};
+    }
+  }
+}

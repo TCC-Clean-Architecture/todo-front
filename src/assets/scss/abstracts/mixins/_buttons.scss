@@ -1,0 +1,164 @@
+@use 'sass:map';
+@use '../variables' as *;
+@use '../functions' as *;
+
+// Define default mixin
+@mixin default-button($theme, $self: '.button') {
+  $clr-1: get-theme-color($theme, 'contrast');
+  $clr-2: get-theme-color($theme, 'main');
+  $hover-clr-1: $clr-1;
+  $hover-clr-2: get-theme-color($theme, 'dark');
+  $active-clr: $clr-1;
+  $disabled-clr-1: var(--clr-mute-dark);
+  $disabled-clr-2: var(--clr-mute);
+
+  color: $clr-1;
+  background-color: $clr-2;
+
+  &:hover {
+    color: $hover-clr-1;
+    background-color: $hover-clr-2;
+  }
+
+  &:active,
+  &#{$self}--active {
+    color: $active-clr;
+    box-shadow: $elevation-inset-2;
+  }
+
+  &:disabled,
+  &#{$self}--disabled {
+    color: $disabled-clr-1;
+    background-color: $disabled-clr-2;
+  }
+}
+
+// Define outline variant mixin
+@mixin outline-button($theme, $self: '.button') {
+  $clr-1: get-theme-color($theme, 'contrast');
+  $clr-2: get-theme-color($theme, 'main');
+  $hover-clr-1: $clr-1;
+  $hover-clr-2: $clr-2;
+  $active-clr-1: $clr-1;
+  $active-clr-2: $clr-2;
+  $disabled-clr-1: var(--clr-mute-dark);
+  $disabled-clr-2: var(--clr-mute);
+
+  color: $clr-2;
+
+  background-color: transparent;
+  border: 1px solid $clr-2;
+
+  &:hover {
+    color: $hover-clr-1;
+    background-color: $hover-clr-2;
+  }
+
+  &:active,
+  &#{$self}--active {
+    color: $active-clr-1;
+    background-color: $active-clr-2;
+    box-shadow: $elevation-inset-2;
+
+    &:hover {
+      background-color: get-theme-color($theme, 'dark');
+    }
+  }
+
+  &#{$self}--disabled,
+  &:disabled {
+    color: $disabled-clr-1;
+    border-color: $disabled-clr-2;
+  }
+}
+
+// Define flat variant mixin
+@mixin flat-button($theme, $self: '.button') {
+  $clr-1: $c-gray-30;
+  $clr-2: $c-lighter;
+  $hover-clr-1: $clr-1;
+  $hover-clr-2: $c-gray-80;
+  $active-clr-1: get-theme-color($theme, 'main');
+  $active-clr-2: $clr-2;
+  $disabled-clr-1: var(--clr-mute-dark);
+  $disabled-clr-2: var(--clr-mute);
+
+  color: $clr-1;
+  background-color: $clr-2;
+
+  &:hover {
+    color: $hover-clr-1;
+    background-color: $hover-clr-2;
+  }
+
+  &:active,
+  &#{$self}--active {
+    color: $active-clr-1;
+    background-color: $active-clr-2;
+    box-shadow: $elevation-inset-2;
+  }
+
+  &:disabled,
+  &#{$self}--disabled {
+    color: $disabled-clr-1;
+    background-color: $disabled-clr-2;
+  }
+}
+
+// Define text variant mixin
+@mixin text-button($theme, $self: '.button') {
+  $clr-1: get-theme-color($theme, 'main');
+  $clr-2: get-theme-color($theme, 'dimm-2');
+  $hover-clr-1: $clr-1;
+  $hover-clr-2: $clr-2;
+  $active-clr-1: get-theme-color($theme, 'dark');
+  $active-clr-2: $clr-2;
+  $disabled-clr-1: var(--clr-mute-dark);
+  $disabled-clr-2: var(--clr-mute);
+
+  color: $clr-1;
+  background-color: transparent;
+
+  &:hover {
+    color: $hover-clr-1;
+    background-color: $hover-clr-2;
+  }
+
+  &:active,
+  &#{$self}--active {
+    color: $active-clr-1;
+    background-color: $active-clr-2;
+  }
+
+  &:disabled,
+  &#{$self}--disabled {
+    color: $disabled-clr-1;
+    background-color: $disabled-clr-2;
+  }
+}
+
+// Define plain variant mixin
+@mixin plain-button($theme, $self: '.button') {
+  $clr: get-theme-color($theme, 'main');
+  $hover-clr: get-theme-color($theme, 'dark');
+  $active-clr: get-theme-color($theme, 'dark');
+  $disabled-clr-1: var(--clr-mute-dark);
+
+  color: $clr;
+  background-color: transparent;
+
+  &:hover {
+    color: $hover-clr;
+  }
+
+  &:active,
+  &#{$self}--active {
+    color: $active-clr;
+    box-shadow: unset;
+  }
+
+  &:disabled,
+  &#{$self}--disabled {
+    color: $disabled-clr-1;
+  }
+}
