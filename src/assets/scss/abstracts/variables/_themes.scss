@@ -1,0 +1,94 @@
+@use 'sass:map';
+@use 'colors' as *;
+
+// Generated pattern by $theme-colors and $theme-color-properties
+// 'primary': (
+//   'main': var(--clr-primary),
+//   'light': var(--clr-primary-light),
+//   'lighter': var(--clr-primary-lighter),
+//   'lightest': var(--clr-primary-lightest),
+//   'dark': var(--clr-primary-dark),
+//   'darker': var(--clr-primary-darker),
+//   'darkest': var(--clr-primary-darkest),
+//   'dimm-1': var(--clr-primary-dimm-1),
+//   'dimm-2': var(--clr-primary-dimm-2),
+//   'dimm-3': var(--clr-primary-dimm-3),
+//   'contrast': var(--clr-primary-contrast),
+//   'contrast-inverse': var(--clr-primary-contrast-inverse),
+// )
+
+$themes: ();
+
+$theme-colors: (
+  'primary': $c-primary,
+  'secondary': $c-secondary,
+  'success': $c-success,
+  'danger': $c-danger,
+  'warning': $c-warning,
+  'info': $c-info,
+  'loving': $c-loving,
+  'gray': $c-gray-40,
+);
+
+$default-property-name: ' !default';
+
+$theme-color-properties: (
+  #{$default-property-name}: (),
+  'light': (
+    'function': 'tint-color',
+    'args': 40%,
+  ),
+  'lighter': (
+    'function': 'tint-color',
+    'args': 60%,
+  ),
+  'lightest': (
+    'function': 'tint-color',
+    'args': 80%,
+  ),
+  'dark': (
+    'function': 'shade-color',
+    'args': 30%,
+  ),
+  'darker': (
+    'function': 'shade-color',
+    'args': 40%,
+  ),
+  'darkest': (
+    'function': 'shade-color',
+    'args': 60%,
+  ),
+  'dimm-1': (
+    'function': 'transparentize',
+    'args': 0.95,
+  ),
+  'dimm-2': (
+    'function': 'transparentize',
+    'args': 0.8,
+  ),
+  'dimm-3': (
+    'function': 'transparentize',
+    'args': 0.5,
+  ),
+  'contrast': (
+    'function': 'contrast-color',
+  ),
+  'contrast-inverse': (
+    'function': 'contrast-color-inverse',
+  )
+);
+
+@each $theme, $color in $theme-colors {
+  $aux-properties: ();
+
+  @each $property, $value in $theme-color-properties {
+    @if $property == $default-property-name {
+      $css-var: var(--clr-#{$theme});
+      $aux-properties: map.set($aux-properties, 'main', $css-var);
+    } @else {
+      $css-var: var(--clr-#{$theme}-#{$property});
+      $aux-properties: map.set($aux-properties, $property, $css-var);
+    }
+  }
+  $themes: map.set($themes, $theme, $aux-properties);
+}
