@@ -21,7 +21,7 @@
 		:placeholder="placeholder"
 		:loading="loading"
 		@update:model-value="$emit('update:model-value', $event)"
-		@close="$emit('close', $event)"
+		@close="$emit('close')"
 		@open="openWrapper"
 	>
 		<template #tag>
@@ -82,6 +82,8 @@ const props = withDefaults(defineProps<IProps>(), {
 /* -- Emits -- */
 
 const emit = defineEmits<{
+	(e: 'update:model-value', event: unknown): void;
+	(e: 'close'): void;
 	(e: 'open'): void;
 	(e: 'wrapper-scroll', event: Event): void;
 }>();
