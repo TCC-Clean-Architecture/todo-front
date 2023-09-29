@@ -8,15 +8,15 @@ const router = createRouter({
 			redirect: '/',
 		},
 		{
-			path: '/dashboard',
+			path: '/lists',
 			alias: '/',
-			name: 'Dashboard',
-			component: () => import('../views/DashboardView.vue'),
+			name: 'Lists',
+			component: () => import('../views/ListsView.vue'),
 			children: [
 				{
-					path: 'lists/:id',
-					name: 'DashboardLists',
-					component: () => import('../views/ListsView.vue'),
+					path: ':id',
+					name: 'ListsViewList',
+					component: () => import('../views/ListView.vue'),
 				},
 			],
 		},
