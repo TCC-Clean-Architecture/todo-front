@@ -20,6 +20,8 @@
 <script lang="ts" setup>
 import BaseModal from '@/components/BaseModal.vue';
 
+import { computed, toValue } from 'vue';
+import { useRoute } from 'vue-router';
 import { useVModel } from '@vueuse/core';
 import { useTodosStore } from '@/stores/todos';
 
@@ -39,6 +41,11 @@ const emit = defineEmits<{
 
 const show = useVModel(props, 'modelValue', emit);
 const todosStore = useTodosStore();
+const route = useRoute();
+
+const listId = computed(() => {
+	return route.params.id as string;
+});
 
 const closeModal = () => {
 	show.value = false;
@@ -47,7 +54,7 @@ const closeModal = () => {
 const removeTodo = () => {
 	if (!props.id) return;
 	const params = {
-		listId: '6510a481859d6019d2abc34a',
+		listId: toValue(listId),
 		todoId: props.id,
 	};
 	todosStore.DELETE_TODO(params).then(() => {

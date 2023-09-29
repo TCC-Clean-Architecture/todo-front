@@ -60,7 +60,8 @@ import NewEditTaskModal from '@/components/modals/NewEditTaskModal.vue';
 import RemoveTaskModal from '@/components/modals/RemoveTaskModal.vue';
 import Draggable from 'vuedraggable';
 
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, computed, toValue, onMounted } from 'vue';
+import { useRoute, onBeforeRouteUpdate } from 'vue-router';
 import { useListsStore } from '@/stores/lists';
 import getAvailableStatus from '@/utils/getAvailableStatus';
 
@@ -95,6 +96,7 @@ const modals: IModals = reactive({
 	},
 });
 const listsStore = useListsStore();
+const route = useRoute();
 
 type ITodo = {
 	id: string | number;
@@ -103,26 +105,11 @@ type ITodo = {
 	status: string;
 };
 
-const tasks = ref<ITodo[]>([
-	{
-		id: 1,
-		name: `Option to "use local/server version" feature`,
-		description: `It usually displays this message when you close an unsaved page when you do it on purpose, and it's getting frustrated to see this every time.`,
-		status: 'Status',
-	},
-	{
-		id: 2,
-		name: `Option to "use local/server version" feature`,
-		description: `It usually displays this message when you close an unsaved page when you do it on purpose, and it's getting frustrated to see this every time.`,
-		status: 'Status',
-	},
-	{
-		id: 3,
-		name: `Option to "use local/server version" feature`,
-		description: `It usually displays this message when you close an unsaved page when you do it on purpose, and it's getting frustrated to see this every time.`,
-		status: 'Status',
-	},
-]);
+const tasks = ref<ITodo[]>([]);
+
+const listId = computed(() => {
+	return route.params.id as string;
+});
 
 const openRemoveTaskModal = (id: string) => {
 	modals.removeTask.props.id = id;
@@ -133,7 +120,7 @@ const openRemoveTaskModal = (id: string) => {
 const openNewEditTaskModal = (id?: string) => {
 	modals.newEditTask.props.id = id;
 	modals.newEditTask.modalOpen = true;
-	modals.newEditTask.props.callback = () => getTodos();
+	modals.newEditTask.props.callback = () => getTodos(toValue(listId));
 };
 
 const removeTodo = (id: string) => {
@@ -146,9 +133,8 @@ const getStatusName = (status: string) => {
 	return getAvailableStatus(status).name;
 };
 
-const getTodos = () => {
-	const listId = '6510a481859d6019d2abc34a';
-	listsStore.GET_LIST(listId).then((todos) => {
+const getTodos = (id: string) => {
+	listsStore.GET_LIST(id).then((todos) => {
 		tasks.value = todos.map((todo) => ({
 			id: todo._id,
 			name: todo.name,
@@ -158,8 +144,15 @@ const getTodos = () => {
 	});
 };
 
+onBeforeRouteUpdate((to, from) => {
+	if (to.params.id !== from.params.id) {
+		getTodos(to.params.id as string);
+	}
+});
+
 onMounted(() => {
-	getTodos();
+	const id = toValue(listId);
+	getTodos(id);
 });
 </script>
 

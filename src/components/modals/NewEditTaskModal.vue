@@ -54,7 +54,8 @@ import BaseModal from '@/components/BaseModal.vue';
 import BaseInput from '@/components/BaseInput.vue';
 import BaseMultiselect from '@/components/BaseMultiselect.vue';
 
-import { reactive, computed } from 'vue';
+import { reactive, computed, toValue } from 'vue';
+import { useRoute } from 'vue-router';
 import { useVModel } from '@vueuse/core';
 import { useTodosStore } from '@/stores/todos';
 import getAvailableStatus from '@/utils/getAvailableStatus';
@@ -113,6 +114,7 @@ const options: IOptions = reactive({
 
 const show = useVModel(props, 'modelValue', emit);
 const todosStore = useTodosStore();
+const route = useRoute();
 
 const componentInfo = computed(() => {
 	if (props.id) {
@@ -129,6 +131,10 @@ const componentInfo = computed(() => {
 	};
 });
 
+const listId = computed(() => {
+	return route.params.id as string;
+});
+
 const closeModal = () => {
 	show.value = false;
 };
@@ -142,7 +148,7 @@ const resetModal = () => {
 const getTodo = () => {
 	if (!props.id) return;
 	const params = {
-		listId: '6510a481859d6019d2abc34a',
+		listId: toValue(listId),
 		todoId: props.id,
 	};
 	todosStore.GET_TODO(params).then((todo) => {
@@ -165,7 +171,7 @@ const onSave = () => {
 	};
 	if (props.id) {
 		const params = {
-			listId: '6510a481859d6019d2abc34a',
+			listId: toValue(listId),
 			todoId: props.id,
 		};
 		return todosStore.EDIT_TODO({ params, body }).then(() => {
@@ -174,7 +180,7 @@ const onSave = () => {
 		});
 	}
 	const params = {
-		listId: '6510a481859d6019d2abc34a',
+		listId: toValue(listId),
 	};
 	todosStore.CREATE_TODO({ params, body }).then(() => {
 		closeModal();

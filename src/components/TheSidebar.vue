@@ -17,8 +17,12 @@
 			</button>
 
 			<ul class="lists">
-				<li v-for="list in lists" :key="list.id" class="lists__list">
-					<button class="list" :class="{ 'list--active': list.id === 1 }">
+				<li v-for="list in todoLists" :key="list.id" class="lists__list">
+					<button
+						class="list"
+						:class="{ 'list--active': isListUsed(list.id) }"
+						@click="useList(list.id)"
+					>
 						<i class="list__icon"><IconList /></i>
 						<span v-show="!collapse" v-text="list.name" />
 						<button v-show="!collapse" class="list__delete-button">
@@ -43,8 +47,10 @@ import IconList from '@/components/icons/IconList.vue';
 import IconTrash from '@/components/icons/IconTrash.vue';
 import SwitchColorTheme from '@/components/SwitchColorTheme.vue';
 
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import { useVModel } from '@vueuse/core';
+import { useListsStore } from '@/stores/lists';
 
 const props = defineProps<{
 	modelValue: boolean;
@@ -55,12 +61,32 @@ const emit = defineEmits<{
 }>();
 
 const collapse = useVModel(props, 'modelValue', emit);
-const lists = ref<Array<any>>([
-	{ id: 1, name: 'Lista 1' },
-	{ id: 2, name: 'Lista 2' },
-	{ id: 3, name: 'Lista 3' },
-	{ id: 4, name: 'Lista 4' },
-]);
+const router = useRouter();
+const route = useRoute();
+const listsStore = useListsStore();
+
+const todoLists = ref<Array<any>>([]);
+
+const getLists = () => {
+	listsStore.GET_LISTS().then((lists) => {
+		todoLists.value = lists.map((list) => ({
+			id: list._id,
+			name: list.name,
+		}));
+	});
+};
+
+const isListUsed = (id: string) => {
+	return route.params.id === id;
+};
+
+const useList = (id: string) => {
+	router.push({ name: 'ListsViewList', params: { id } });
+};
+
+onMounted(() => {
+	getLists();
+});
 </script>
 
 <style lang="scss" scoped>
@@ -233,7 +259,7 @@ const lists = ref<Array<any>>([
 			display: grid;
 			place-items: center;
 
-			$size: 1.5rem;
+			$size: 1.25rem;
 			height: $size;
 			width: $size;
 
