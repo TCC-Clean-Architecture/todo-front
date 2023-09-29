@@ -28,7 +28,7 @@ export const useListsStore = defineStore('lists', {
 			return new Promise((resolve, reject) => {
 				http({
 					method: 'GET',
-					url: '/todos/list',
+					url: '/todos/lists',
 				})
 					.then((response: AxiosResponse<IReponseMessage<ITodo[]>>) => {
 						resolve(response.data.content);
