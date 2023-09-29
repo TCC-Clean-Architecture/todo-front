@@ -68,14 +68,14 @@ export const useTodosStore = defineStore('todos', {
 					});
 			});
 		},
-		EDIT_TODO({ params, body }: IEditTodoPayload): Promise<ITodo> {
+		EDIT_TODO({ params, body }: IEditTodoPayload): Promise<Omit<ITodo, 'createdAt'>> {
 			return new Promise((resolve, reject) => {
 				http({
 					method: 'PUT',
 					url: `/todos/${params.todoId}/list/${params.listId}`,
 					data: body,
 				})
-					.then((response: AxiosResponse<IReponseMessage<ITodo>>) => {
+					.then((response: AxiosResponse<IReponseMessage<Omit<ITodo, 'createdAt'>>>) => {
 						resolve(response.data.content);
 					})
 					.catch((error: AxiosError) => {
