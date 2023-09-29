@@ -11,7 +11,14 @@ const router = createRouter({
 			path: '/dashboard',
 			alias: '/',
 			name: 'Dashboard',
-			component: () => import('../views/HomeView.vue'),
+			component: () => import('../views/DashboardView.vue'),
+			children: [
+				{
+					path: 'lists/:id',
+					name: 'DashboardLists',
+					component: () => import('../views/ListsView.vue'),
+				},
+			],
 		},
 	],
 	linkActiveClass: 'link--active',
