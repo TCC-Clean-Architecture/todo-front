@@ -21,7 +21,7 @@
 import BaseModal from '@/components/BaseModal.vue';
 
 import { useVModel } from '@vueuse/core';
-import { useTodoListStore } from '@/stores/todo-list';
+import { useTodosStore } from '@/stores/todos';
 
 interface IProps {
 	modelValue: boolean;
@@ -38,7 +38,7 @@ const emit = defineEmits<{
 }>();
 
 const show = useVModel(props, 'modelValue', emit);
-const todoListStore = useTodoListStore();
+const todosStore = useTodosStore();
 
 const closeModal = () => {
 	show.value = false;
@@ -46,7 +46,11 @@ const closeModal = () => {
 
 const removeTodo = () => {
 	if (!props.id) return;
-	todoListStore.DELETE_TODO(props.id).then(() => {
+	const params = {
+		listId: '6510a481859d6019d2abc34a',
+		todoId: props.id,
+	};
+	todosStore.DELETE_TODO(params).then(() => {
 		closeModal();
 		if (props.callback) props.callback();
 	});
@@ -113,3 +117,4 @@ const removeTodo = () => {
 	}
 }
 </style>
+@/stores/lists
