@@ -114,6 +114,7 @@ interface IProps {
 
 const props = withDefaults(defineProps<IProps>(), {
 	type: 'text',
+	events: () => ({}),
 });
 
 /* -- Emits -- */
