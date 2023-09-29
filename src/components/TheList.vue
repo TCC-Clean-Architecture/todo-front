@@ -61,7 +61,7 @@ import RemoveTaskModal from '@/components/modals/RemoveTaskModal.vue';
 import Draggable from 'vuedraggable';
 
 import { ref, reactive, onMounted } from 'vue';
-import { useTodoListStore } from '@/stores/todo-list';
+import { useListsStore } from '@/stores/lists';
 import getAvailableStatus from '@/utils/getAvailableStatus';
 
 interface IGenericModal<T = undefined> {
@@ -94,7 +94,7 @@ const modals: IModals = reactive({
 		},
 	},
 });
-const todoListStore = useTodoListStore();
+const listsStore = useListsStore();
 
 type ITodo = {
 	id: string | number;
@@ -147,7 +147,8 @@ const getStatusName = (status: string) => {
 };
 
 const getTodos = () => {
-	todoListStore.GET_TODOS().then((todos) => {
+	const listId = '6510a481859d6019d2abc34a';
+	listsStore.GET_LIST(listId).then((todos) => {
 		tasks.value = todos.map((todo) => ({
 			id: todo._id,
 			name: todo.name,
@@ -355,3 +356,4 @@ onMounted(() => {
 	}
 }
 </style>
+@/stores/lists

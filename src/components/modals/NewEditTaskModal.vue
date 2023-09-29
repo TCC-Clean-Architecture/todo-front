@@ -56,7 +56,7 @@ import BaseMultiselect from '@/components/BaseMultiselect.vue';
 
 import { reactive, computed } from 'vue';
 import { useVModel } from '@vueuse/core';
-import { useTodoListStore } from '@/stores/todo-list';
+import { useTodosStore } from '@/stores/todos';
 import getAvailableStatus from '@/utils/getAvailableStatus';
 
 interface IProps {
@@ -112,7 +112,7 @@ const options: IOptions = reactive({
 });
 
 const show = useVModel(props, 'modelValue', emit);
-const todoListStore = useTodoListStore();
+const todosStore = useTodosStore();
 
 const componentInfo = computed(() => {
 	if (props.id) {
@@ -141,7 +141,11 @@ const resetModal = () => {
 
 const getTodo = () => {
 	if (!props.id) return;
-	todoListStore.GET_TODO(props.id).then((todo) => {
+	const params = {
+		listId: '6510a481859d6019d2abc34a',
+		todoId: props.id,
+	};
+	todosStore.GET_TODO(params).then((todo) => {
 		form.title = todo.name;
 		form.description = todo.description;
 		const status = getAvailableStatus(todo.status);
@@ -154,18 +158,25 @@ const getTodo = () => {
 
 const onSave = () => {
 	if (!(form.title && form.description && form.status)) return;
-	const requestBody = {
+	const body = {
 		name: form.title,
 		description: form.description,
 		status: form.status.value,
 	};
 	if (props.id) {
-		return todoListStore.EDIT_TODO(props.id, requestBody).then(() => {
+		const params = {
+			listId: '6510a481859d6019d2abc34a',
+			todoId: props.id,
+		};
+		return todosStore.EDIT_TODO({ params, body }).then(() => {
 			closeModal();
 			if (props.callback) props.callback();
 		});
 	}
-	todoListStore.CREATE_TODO(requestBody).then(() => {
+	const params = {
+		listId: '6510a481859d6019d2abc34a',
+	};
+	todosStore.CREATE_TODO({ params, body }).then(() => {
 		closeModal();
 		if (props.callback) props.callback();
 	});
@@ -279,3 +290,4 @@ const onSave = () => {
 	}
 }
 </style>
+@/stores/lists

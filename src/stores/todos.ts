@@ -4,13 +4,18 @@ import { defineStore } from 'pinia';
 
 const { http } = api.getInstance();
 
-type ITodo = {
+interface ITodo {
 	_id: string;
 	name: string;
 	description: string;
 	status: string;
 	createdAt: string;
-};
+}
+
+interface ITodoParamsIDs {
+	listId: string;
+	todoId: string;
+}
 
 interface IReponseMessage<T> {
 	content: T;
@@ -22,27 +27,23 @@ interface IReponseMessage<T> {
 
 type ITodoBasic = Omit<ITodo, '_id' | 'createdAt'>;
 
-export const useTodoListStore = defineStore('todo-list', {
+interface ICreateTodoPayload {
+	params: Pick<ITodoParamsIDs, 'listId'>;
+	body: ITodoBasic;
+}
+
+interface IEditTodoPayload {
+	params: ITodoParamsIDs;
+	body: ITodoBasic;
+}
+
+export const useTodosStore = defineStore('todos', {
 	actions: {
-		GET_TODOS(): Promise<ITodo[]> {
+		GET_TODO({ listId, todoId }: ITodoParamsIDs): Promise<ITodo> {
 			return new Promise((resolve, reject) => {
 				http({
 					method: 'GET',
-					url: '/todos',
-				})
-					.then((response: AxiosResponse<IReponseMessage<ITodo[]>>) => {
-						resolve(response.data.content);
-					})
-					.catch((error: AxiosError) => {
-						reject(error);
-					});
-			});
-		},
-		GET_TODO(id: string): Promise<ITodo> {
-			return new Promise((resolve, reject) => {
-				http({
-					method: 'GET',
-					url: `/todos/${id}`,
+					url: `/todos/${todoId}/list/${listId}`,
 				})
 					.then((response: AxiosResponse<IReponseMessage<ITodo>>) => {
 						resolve(response.data.content);
@@ -52,11 +53,11 @@ export const useTodoListStore = defineStore('todo-list', {
 					});
 			});
 		},
-		CREATE_TODO(body: ITodoBasic): Promise<ITodo> {
+		CREATE_TODO({ params, body }: ICreateTodoPayload): Promise<ITodo> {
 			return new Promise((resolve, reject) => {
 				http({
 					method: 'POST',
-					url: '/todos',
+					url: `/todos/list/${params.listId}`,
 					data: body,
 				})
 					.then((response: AxiosResponse<IReponseMessage<ITodo>>) => {
@@ -67,11 +68,11 @@ export const useTodoListStore = defineStore('todo-list', {
 					});
 			});
 		},
-		EDIT_TODO(id: string, body: ITodoBasic): Promise<ITodo> {
+		EDIT_TODO({ params, body }: IEditTodoPayload): Promise<ITodo> {
 			return new Promise((resolve, reject) => {
 				http({
 					method: 'PUT',
-					url: `/todos/${id}`,
+					url: `/todos/${params.todoId}/list/${params.listId}`,
 					data: body,
 				})
 					.then((response: AxiosResponse<IReponseMessage<ITodo>>) => {
@@ -82,11 +83,11 @@ export const useTodoListStore = defineStore('todo-list', {
 					});
 			});
 		},
-		DELETE_TODO(id: string): Promise<Pick<ITodo, '_id'>> {
+		DELETE_TODO({ listId, todoId }: ITodoParamsIDs): Promise<Pick<ITodo, '_id'>> {
 			return new Promise((resolve, reject) => {
 				http({
 					method: 'DELETE',
-					url: `/todos/${id}`,
+					url: `/todos/${todoId}/list/${listId}`,
 				})
 					.then((response: AxiosResponse<IReponseMessage<Pick<ITodo, '_id'>>>) => {
 						resolve(response.data.content);
