@@ -89,9 +89,12 @@ const removeTodo = () => {
 
 	&__delete {
 		height: 40px;
-		min-width: 120px;
+		min-width: 140px;
 		padding-inline: 1.5rem;
+
 		color: var(--clr-text-inverse-1);
+		font-weight: 600;
+
 		background-color: var(--clr-danger);
 		border-radius: 100vw;
 
@@ -104,9 +107,12 @@ const removeTodo = () => {
 
 	&__cancel {
 		height: 40px;
-		min-width: 120px;
+		min-width: 140px;
 		padding-inline: 1.5rem;
+
 		color: var(--clr-text-1);
+		font-weight: 600;
+
 		border-radius: 100vw;
 
 		transition: background-color 200ms ease-in-out;

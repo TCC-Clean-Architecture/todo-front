@@ -218,11 +218,14 @@ const onSave = () => {
 
 	&__create {
 		height: 40px;
-		min-width: 120px;
+		min-width: 140px;
 		padding-inline: 1.5rem;
-		color: var(--clr-text-inverse-1);
+
 		background-color: var(--clr-secondary);
 		border-radius: 100vw;
+
+		color: var(--clr-text-inverse-1);
+		font-weight: 600;
 
 		transition: background-color 200ms ease-in-out;
 
@@ -233,10 +236,13 @@ const onSave = () => {
 
 	&__cancel {
 		height: 40px;
-		min-width: 120px;
+		min-width: 140px;
 		padding-inline: 1.5rem;
-		color: var(--clr-text-1);
+
 		border-radius: 100vw;
+
+		color: var(--clr-text-1);
+		font-weight: 600;
 
 		transition: background-color 200ms ease-in-out;
 

@@ -27,11 +27,13 @@ $default-theme: (
     'light': $c-lightest,
   ),
   'mute': (
-    #{$default-property-name}: $c-gray-92,
-    'light': $c-gray-95,
-    'lighter': $c-gray-98,
+    #{$default-property-name}: $c-gray-80,
+    'light': $c-gray-90,
+    'lighter': $c-gray-95,
+    'lightest': $c-gray-98,
     'dark': $c-gray-70,
     'darker': $c-gray-60,
+    'darkest': $c-gray-45,
   ),
 );
 
