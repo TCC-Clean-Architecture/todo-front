@@ -1,6 +1,13 @@
 <template>
 	<section class="list">
-		<h1 class="list__title">Lista de Atividades</h1>
+		<div class="list__header">
+			<h1 class="list__title">Lista de Atividades</h1>
+
+			<button class="list__action" @click="openRemoveListModal(listId)">
+				<IconTrash />
+			</button>
+		</div>
+
 		<Draggable
 			tag="ol"
 			class="list__wrapper"
@@ -49,6 +56,11 @@
 		:id="modals.removeTask.props.id"
 		:callback="modals.removeTask.props.callback"
 	/>
+	<RemoveListModal
+		v-model="modals.removeList.modalOpen"
+		:id="modals.removeList.props.id"
+		:callback="modals.removeList.props.callback"
+	/>
 </template>
 
 <script lang="ts" setup>
@@ -58,10 +70,11 @@ import IconTrash from '@/components/icons/IconTrash.vue';
 import IconPlus from '@/components/icons/IconPlus.vue';
 import NewEditTaskModal from '@/components/modals/NewEditTaskModal.vue';
 import RemoveTaskModal from '@/components/modals/RemoveTaskModal.vue';
+import RemoveListModal from '@/components/modals/RemoveListModal.vue';
 import Draggable from 'vuedraggable';
 
 import { ref, reactive, computed, toValue, onMounted } from 'vue';
-import { useRoute, onBeforeRouteUpdate } from 'vue-router';
+import { useRoute, useRouter, onBeforeRouteUpdate } from 'vue-router';
 import { useListsStore } from '@/stores/lists';
 import getAvailableStatus from '@/utils/getAvailableStatus';
 
@@ -78,6 +91,7 @@ interface IModalProps {
 interface IModals {
 	newEditTask: IGenericModal<IModalProps>;
 	removeTask: IGenericModal<IModalProps>;
+	removeList: IGenericModal<IModalProps>;
 }
 
 const modals: IModals = reactive({
@@ -94,9 +108,17 @@ const modals: IModals = reactive({
 			callback: undefined,
 		},
 	},
+	removeList: {
+		modalOpen: false,
+		props: {
+			id: undefined,
+			callback: undefined,
+		},
+	},
 });
 const listsStore = useListsStore();
 const route = useRoute();
+const router = useRouter();
 
 type ITodo = {
 	id: string | number;
@@ -121,6 +143,14 @@ const openNewEditTaskModal = (id?: string) => {
 	modals.newEditTask.props.id = id;
 	modals.newEditTask.modalOpen = true;
 	modals.newEditTask.props.callback = () => getTodos(toValue(listId));
+};
+
+const openRemoveListModal = (id: string) => {
+	modals.removeList.props.id = id;
+	modals.removeList.modalOpen = true;
+	modals.removeList.props.callback = () => {
+		router.push({ name: 'Lists' });
+	};
 };
 
 const removeTodo = (id: string) => {
@@ -165,18 +195,50 @@ onMounted(() => {
 
 	margin-block-start: 0.25rem;
 
-	&__title {
-		display: block;
+	&__header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
 
 		padding-block: 0.25rem;
 		padding-inline: 1rem;
 
+		background-color: var(--clr-bg-soft);
+		border-radius: 0.5rem;
+	}
+
+	&__title {
 		color: var(--clr-primary);
 		font-size: 2rem;
 		font-weight: 700;
+	}
 
-		background-color: var(--clr-bg-soft);
+	&__action {
+		width: 1.75rem;
+		height: 1.75rem;
+		padding: 0.125rem;
+
+		color: var(--clr-secondary);
+
+		background-color: var(--clr-bg-soft-up);
 		border-radius: 0.5rem;
+
+		transition: background-color 150ms ease-in-out;
+
+		&:hover {
+			background-color: var(--clr-secondary-lightest);
+
+			svg {
+				scale: 1.1;
+			}
+		}
+
+		svg {
+			transition: scale 150ms ease-in-out;
+
+			width: 100%;
+			height: 100%;
+		}
 	}
 
 	&__wrapper {

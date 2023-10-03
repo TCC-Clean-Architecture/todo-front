@@ -1,15 +1,15 @@
 <template>
-	<BaseModal class="new-task-modal" v-model="show" @close="resetModal">
+	<BaseModal class="new-list-modal" v-model="show" @close="resetModal">
 		<template #title>
-			<h2 class="new-task-modal__title">Criar nova lista</h2>
+			<h2 class="new-list-modal__title">Criar nova lista</h2>
 		</template>
-		<div class="new-task-modal__content">
-			<p class="new-task-modal__description">Defina um nome para lista que será criada</p>
-			<form class="new-task-modal__form" @submit.prevent>
+		<div class="new-list-modal__content">
+			<p class="new-list-modal__description">Defina um nome para lista que será criada</p>
+			<form class="new-list-modal__form" @submit.prevent>
 				<BaseInput v-model="form.name" type="text" name="name" variant="outline" label="Nome" />
-				<div class="new-task-modal__actions">
-					<button class="new-task-modal__create" @click="onSave()">Criar</button>
-					<button class="new-task-modal__cancel" @click="show = false">Cancelar</button>
+				<div class="new-list-modal__actions">
+					<button class="new-list-modal__create" @click="onSave()">Criar</button>
+					<button class="new-list-modal__cancel" @click="show = false">Cancelar</button>
 				</div>
 			</form>
 		</div>
@@ -69,7 +69,7 @@ const onSave = () => {
 </script>
 
 <style lang="scss" scoped>
-.new-task-modal {
+.new-list-modal {
 	$self: &;
 	&__title {
 		margin-block-start: 1rem;

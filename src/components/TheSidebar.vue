@@ -25,7 +25,11 @@
 					>
 						<i class="list__icon"><IconList /></i>
 						<span v-show="!collapse" v-text="list.name" />
-						<button v-show="!collapse" class="list__delete-button">
+						<button
+							v-show="!collapse"
+							class="list__delete-button"
+							@click="openRemoveListModal(list.id)"
+						>
 							<i class="list__icon"><IconTrash /></i>
 						</button>
 					</button>
@@ -36,6 +40,11 @@
 			<SwitchColorTheme />
 		</div>
 		<NewListModal v-model="modals.newList.modalOpen" :callback="modals.newList.props.callback" />
+		<RemoveListModal
+			v-model="modals.removeList.modalOpen"
+			:id="modals.removeList.props.id"
+			:callback="modals.removeList.props.callback"
+		/>
 	</aside>
 </template>
 
@@ -48,8 +57,9 @@ import IconList from '@/components/icons/IconList.vue';
 import IconTrash from '@/components/icons/IconTrash.vue';
 import SwitchColorTheme from '@/components/SwitchColorTheme.vue';
 import NewListModal from '@/components/modals/NewListModal.vue';
+import RemoveListModal from '@/components/modals/RemoveListModal.vue';
 
-import { ref, reactive, onMounted } from 'vue';
+import { computed, ref, reactive, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useVModel } from '@vueuse/core';
 import { useListsStore } from '@/stores/lists';
@@ -61,11 +71,12 @@ interface IGenericModal<T = undefined> {
 
 interface IModalProps {
 	id?: string;
-	callback?: (id: string) => void;
+	callback?: (id?: string) => void;
 }
 
 interface IModals {
 	newList: IGenericModal<IModalProps>;
+	removeList: IGenericModal<IModalProps>;
 }
 
 const props = defineProps<{
@@ -88,25 +99,39 @@ const modals: IModals = reactive({
 			callback: undefined,
 		},
 	},
+	removeList: {
+		modalOpen: false,
+		props: {
+			id: undefined,
+			callback: undefined,
+		},
+	},
 });
 
-const todoLists = ref<Array<any>>([]);
+const todoLists = computed(() => {
+	return listsStore.getLists.map((list) => ({
+		id: list._id,
+		name: list.name,
+	}));
+});
 
 const openNewListModal = () => {
 	modals.newList.modalOpen = true;
 	modals.newList.props.callback = (id) => {
-		getLists();
-		useList(id);
+		if (id) useList(id);
+	};
+};
+
+const openRemoveListModal = (id: string) => {
+	modals.removeList.props.id = id;
+	modals.removeList.modalOpen = true;
+	modals.removeList.props.callback = () => {
+		router.push({ name: 'Lists' });
 	};
 };
 
 const getLists = () => {
-	listsStore.GET_LISTS().then((lists) => {
-		todoLists.value = lists.map((list) => ({
-			id: list._id,
-			name: list.name,
-		}));
-	});
+	listsStore.GET_LISTS();
 };
 
 const isListUsed = (id: string) => {

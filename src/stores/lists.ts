@@ -29,15 +29,26 @@ interface IReponseMessage<T> {
 
 type IListBasic = Pick<IList, 'name'>;
 
+interface IListsStoreState {
+	lists: IList[];
+}
+
 export const useListsStore = defineStore('lists', {
+	state: (): IListsStoreState => ({
+		lists: [],
+	}),
+	getters: {
+		getLists: (state) => state.lists,
+	},
 	actions: {
-		GET_LISTS(): Promise<ITodo[]> {
+		GET_LISTS(): Promise<IList[]> {
 			return new Promise((resolve, reject) => {
 				http({
 					method: 'GET',
 					url: '/todos/lists',
 				})
-					.then((response: AxiosResponse<IReponseMessage<ITodo[]>>) => {
+					.then((response: AxiosResponse<IReponseMessage<IList[]>>) => {
+						this.lists = response.data.content;
 						resolve(response.data.content);
 					})
 					.catch((error: AxiosError) => {
@@ -67,6 +78,7 @@ export const useListsStore = defineStore('lists', {
 					data: body,
 				})
 					.then((response: AxiosResponse<IReponseMessage<IList>>) => {
+						this.lists.push(response.data.content);
 						resolve(response.data.content);
 					})
 					.catch((error: AxiosError) => {
@@ -81,6 +93,7 @@ export const useListsStore = defineStore('lists', {
 					url: `/todos/list/${id}`,
 				})
 					.then((response: AxiosResponse<IReponseMessage<Pick<IList, '_id'>>>) => {
+						this.lists = this.lists.filter((t) => t._id !== id);
 						resolve(response.data.content);
 					})
 					.catch((error: AxiosError) => {
