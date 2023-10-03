@@ -4,6 +4,13 @@ import { defineStore } from 'pinia';
 
 const { http } = api.getInstance();
 
+type IList = {
+	_id: string;
+	name: string;
+	todos: ITodo[];
+	createdAt: string;
+};
+
 type ITodo = {
 	_id: string;
 	name: string;
@@ -20,7 +27,7 @@ interface IReponseMessage<T> {
 	type: string;
 }
 
-type ITodoBasic = Omit<ITodo, '_id' | 'createdAt'>;
+type IListBasic = Pick<IList, 'name'>;
 
 export const useListsStore = defineStore('lists', {
 	actions: {
@@ -52,14 +59,14 @@ export const useListsStore = defineStore('lists', {
 					});
 			});
 		},
-		CREATE_LIST(body: ITodoBasic): Promise<ITodo> {
+		CREATE_LIST(body: IListBasic): Promise<IList> {
 			return new Promise((resolve, reject) => {
 				http({
 					method: 'POST',
 					url: '/todos/list',
 					data: body,
 				})
-					.then((response: AxiosResponse<IReponseMessage<ITodo>>) => {
+					.then((response: AxiosResponse<IReponseMessage<IList>>) => {
 						resolve(response.data.content);
 					})
 					.catch((error: AxiosError) => {
@@ -67,13 +74,13 @@ export const useListsStore = defineStore('lists', {
 					});
 			});
 		},
-		DELETE_LIST(id: string): Promise<Pick<ITodo, '_id'>> {
+		DELETE_LIST(id: string): Promise<Pick<IList, '_id'>> {
 			return new Promise((resolve, reject) => {
 				http({
 					method: 'DELETE',
 					url: `/todos/list/${id}`,
 				})
-					.then((response: AxiosResponse<IReponseMessage<Pick<ITodo, '_id'>>>) => {
+					.then((response: AxiosResponse<IReponseMessage<Pick<IList, '_id'>>>) => {
 						resolve(response.data.content);
 					})
 					.catch((error: AxiosError) => {

@@ -11,7 +11,7 @@
 			<hr class="sidebar__divider" />
 		</div>
 		<section class="sidebar__lists">
-			<button class="lists__create-button">
+			<button class="lists__create-button" @click="openNewListModal()">
 				<i class="lists__icon"><IconPlus /></i>
 				<span v-show="!collapse">Lista</span>
 			</button>
@@ -35,6 +35,7 @@
 		<div class="sidebar__misc">
 			<SwitchColorTheme />
 		</div>
+		<NewListModal v-model="modals.newList.modalOpen" :callback="modals.newList.props.callback" />
 	</aside>
 </template>
 
@@ -46,11 +47,26 @@ import IconPlus from '@/components/icons/IconPlus.vue';
 import IconList from '@/components/icons/IconList.vue';
 import IconTrash from '@/components/icons/IconTrash.vue';
 import SwitchColorTheme from '@/components/SwitchColorTheme.vue';
+import NewListModal from '@/components/modals/NewListModal.vue';
 
-import { ref, onMounted } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useVModel } from '@vueuse/core';
 import { useListsStore } from '@/stores/lists';
+
+interface IGenericModal<T = undefined> {
+	modalOpen: boolean;
+	props: T;
+}
+
+interface IModalProps {
+	id?: string;
+	callback?: (id: string) => void;
+}
+
+interface IModals {
+	newList: IGenericModal<IModalProps>;
+}
 
 const props = defineProps<{
 	modelValue: boolean;
@@ -65,7 +81,24 @@ const router = useRouter();
 const route = useRoute();
 const listsStore = useListsStore();
 
+const modals: IModals = reactive({
+	newList: {
+		modalOpen: false,
+		props: {
+			callback: undefined,
+		},
+	},
+});
+
 const todoLists = ref<Array<any>>([]);
+
+const openNewListModal = () => {
+	modals.newList.modalOpen = true;
+	modals.newList.props.callback = (id) => {
+		getLists();
+		useList(id);
+	};
+};
 
 const getLists = () => {
 	listsStore.GET_LISTS().then((lists) => {
