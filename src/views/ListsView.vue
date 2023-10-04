@@ -5,16 +5,13 @@
 	>
 		<TheSidebar class="layout__sidebar" v-model="collapsed" />
 		<main class="layout__content">
-			<BaseBreadcumbs />
-			<TheList />
+			<RouterView />
 		</main>
 	</div>
 </template>
 
 <script setup lang="ts">
 import TheSidebar from '@/components/TheSidebar.vue';
-import BaseBreadcumbs from '@/components/BaseBreadcumbs.vue';
-import TheList from '@/components/TheList.vue';
 
 import { useStorage } from '@vueuse/core';
 

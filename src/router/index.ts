@@ -8,10 +8,17 @@ const router = createRouter({
 			redirect: '/',
 		},
 		{
-			path: '/dashboard',
+			path: '/lists',
 			alias: '/',
-			name: 'Dashboard',
-			component: () => import('../views/HomeView.vue'),
+			name: 'Lists',
+			component: () => import('../views/ListsView.vue'),
+			children: [
+				{
+					path: ':id',
+					name: 'ListsViewList',
+					component: () => import('../views/ListView.vue'),
+				},
+			],
 		},
 	],
 	linkActiveClass: 'link--active',
