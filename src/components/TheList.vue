@@ -1,7 +1,7 @@
 <template>
 	<section class="list">
 		<div class="list__header">
-			<h1 class="list__title">Lista de Atividades</h1>
+			<h1 class="list__title">{{ listName }}</h1>
 
 			<button class="list__action" @click="openRemoveListModal(listId)">
 				<IconTrash />
@@ -128,6 +128,7 @@ type ITodo = {
 };
 
 const tasks = ref<ITodo[]>([]);
+const listName = ref<string>('Lista de tarefas');
 
 const listId = computed(() => {
 	return route.params.id as string;
@@ -164,8 +165,9 @@ const getStatusName = (status: string) => {
 };
 
 const getTodos = (id: string) => {
-	listsStore.GET_LIST(id).then((todos) => {
-		tasks.value = todos.map((todo) => ({
+	listsStore.GET_LIST(id).then((list) => {
+		listName.value = list.name;
+		tasks.value = list.todos.map((todo) => ({
 			id: todo._id,
 			name: todo.name,
 			description: todo.description,

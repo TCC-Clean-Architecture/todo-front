@@ -56,13 +56,13 @@ export const useListsStore = defineStore('lists', {
 					});
 			});
 		},
-		GET_LIST(id: string): Promise<ITodo[]> {
+		GET_LIST(id: string): Promise<IList> {
 			return new Promise((resolve, reject) => {
 				http({
 					method: 'GET',
 					url: `/todos/list/${id}`,
 				})
-					.then((response: AxiosResponse<IReponseMessage<ITodo[]>>) => {
+					.then((response: AxiosResponse<IReponseMessage<IList>>) => {
 						resolve(response.data.content);
 					})
 					.catch((error: AxiosError) => {
