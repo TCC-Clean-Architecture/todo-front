@@ -1,17 +1,17 @@
 <template>
-	<BaseModal class="remove-task-modal" v-model="show" width="420px">
-		<div class="remove-task-modal__content">
-			<h2 class="remove-task-modal__title">Remover tarefa</h2>
-			<p class="remove-task-modal__description">Você tem certeza que deseja excluir a tarefa?</p>
-			<p class="remove-task-modal__description">
-				Caso escolha essa opção, sua tarefa será excluída e você perderá as informações.
+	<BaseModal class="remove-list-modal" v-model="show" width="420px">
+		<div class="remove-list-modal__content">
+			<h2 class="remove-list-modal__title">Remover lista</h2>
+			<p class="remove-list-modal__description">Você tem certeza que deseja excluir a lista?</p>
+			<p class="remove-list-modal__description">
+				Caso escolha essa opção, sua lista será excluída e você perderá todas tarefas.
 			</p>
 		</div>
 
 		<template #footer>
-			<div class="remove-task-modal__actions">
-				<button class="remove-task-modal__delete" @click="removeTodo()">Excluir</button>
-				<button class="remove-task-modal__cancel" @click="show = false">Cancelar</button>
+			<div class="remove-list-modal__actions">
+				<button class="remove-list-modal__delete" @click="removeList()">Excluir</button>
+				<button class="remove-list-modal__cancel" @click="show = false">Cancelar</button>
 			</div>
 		</template>
 	</BaseModal>
@@ -20,10 +20,8 @@
 <script lang="ts" setup>
 import BaseModal from '@/components/BaseModal.vue';
 
-import { computed, toValue } from 'vue';
-import { useRoute } from 'vue-router';
 import { useVModel } from '@vueuse/core';
-import { useTodosStore } from '@/stores/todos';
+import { useListsStore } from '@/stores/lists';
 
 interface IProps {
 	modelValue: boolean;
@@ -40,24 +38,15 @@ const emit = defineEmits<{
 }>();
 
 const show = useVModel(props, 'modelValue', emit);
-const todosStore = useTodosStore();
-const route = useRoute();
-
-const listId = computed(() => {
-	return route.params.id as string;
-});
+const listsStore = useListsStore();
 
 const closeModal = () => {
 	show.value = false;
 };
 
-const removeTodo = () => {
+const removeList = () => {
 	if (!props.id) return;
-	const params = {
-		listId: toValue(listId),
-		todoId: props.id,
-	};
-	todosStore.DELETE_TODO(params).then(() => {
+	listsStore.DELETE_LIST(props.id).then(() => {
 		closeModal();
 		if (props.callback) props.callback();
 	});
@@ -65,7 +54,7 @@ const removeTodo = () => {
 </script>
 
 <style lang="scss" scoped>
-.remove-task-modal {
+.remove-list-modal {
 	$self: &;
 	&__title {
 		margin-block: 1rem;

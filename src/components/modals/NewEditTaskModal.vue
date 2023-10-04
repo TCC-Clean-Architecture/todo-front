@@ -54,9 +54,10 @@ import BaseModal from '@/components/BaseModal.vue';
 import BaseInput from '@/components/BaseInput.vue';
 import BaseMultiselect from '@/components/BaseMultiselect.vue';
 
-import { reactive, computed } from 'vue';
+import { reactive, computed, toValue } from 'vue';
+import { useRoute } from 'vue-router';
 import { useVModel } from '@vueuse/core';
-import { useTodoListStore } from '@/stores/todo-list';
+import { useTodosStore } from '@/stores/todos';
 import getAvailableStatus from '@/utils/getAvailableStatus';
 
 interface IProps {
@@ -112,7 +113,8 @@ const options: IOptions = reactive({
 });
 
 const show = useVModel(props, 'modelValue', emit);
-const todoListStore = useTodoListStore();
+const todosStore = useTodosStore();
+const route = useRoute();
 
 const componentInfo = computed(() => {
 	if (props.id) {
@@ -129,6 +131,10 @@ const componentInfo = computed(() => {
 	};
 });
 
+const listId = computed(() => {
+	return route.params.id as string;
+});
+
 const closeModal = () => {
 	show.value = false;
 };
@@ -141,7 +147,11 @@ const resetModal = () => {
 
 const getTodo = () => {
 	if (!props.id) return;
-	todoListStore.GET_TODO(props.id).then((todo) => {
+	const params = {
+		listId: toValue(listId),
+		todoId: props.id,
+	};
+	todosStore.GET_TODO(params).then((todo) => {
 		form.title = todo.name;
 		form.description = todo.description;
 		const status = getAvailableStatus(todo.status);
@@ -154,18 +164,25 @@ const getTodo = () => {
 
 const onSave = () => {
 	if (!(form.title && form.description && form.status)) return;
-	const requestBody = {
+	const body = {
 		name: form.title,
 		description: form.description,
 		status: form.status.value,
 	};
 	if (props.id) {
-		return todoListStore.EDIT_TODO(props.id, requestBody).then(() => {
+		const params = {
+			listId: toValue(listId),
+			todoId: props.id,
+		};
+		return todosStore.EDIT_TODO({ params, body }).then(() => {
 			closeModal();
 			if (props.callback) props.callback();
 		});
 	}
-	todoListStore.CREATE_TODO(requestBody).then(() => {
+	const params = {
+		listId: toValue(listId),
+	};
+	todosStore.CREATE_TODO({ params, body }).then(() => {
 		closeModal();
 		if (props.callback) props.callback();
 	});
@@ -207,11 +224,14 @@ const onSave = () => {
 
 	&__create {
 		height: 40px;
-		min-width: 120px;
+		min-width: 140px;
 		padding-inline: 1.5rem;
-		color: var(--clr-text-inverse-1);
+
 		background-color: var(--clr-secondary);
 		border-radius: 100vw;
+
+		color: var(--clr-text-inverse-1);
+		font-weight: 600;
 
 		transition: background-color 200ms ease-in-out;
 
@@ -222,10 +242,13 @@ const onSave = () => {
 
 	&__cancel {
 		height: 40px;
-		min-width: 120px;
+		min-width: 140px;
 		padding-inline: 1.5rem;
-		color: var(--clr-text-1);
+
 		border-radius: 100vw;
+
+		color: var(--clr-text-1);
+		font-weight: 600;
 
 		transition: background-color 200ms ease-in-out;
 
@@ -279,3 +302,4 @@ const onSave = () => {
 	}
 }
 </style>
+@/stores/lists

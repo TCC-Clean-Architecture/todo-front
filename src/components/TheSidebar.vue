@@ -10,15 +10,41 @@
 			</i>
 			<hr class="sidebar__divider" />
 		</div>
-		<nav class="sidebar__navigation">
-			<RouterLink to="/" class="sidebar__link" activeClass="sidebar__link--active">
-				<i class="link__icon"><IconHome /></i>
-				<span v-show="!collapse">Dashboard</span>
-			</RouterLink>
-		</nav>
+		<section class="sidebar__lists">
+			<button class="lists__create-button" @click="openNewListModal()">
+				<i class="lists__icon"><IconPlus /></i>
+				<span v-show="!collapse">Lista</span>
+			</button>
+
+			<ul class="lists">
+				<li v-for="list in todoLists" :key="list.id" class="lists__list">
+					<button
+						class="list"
+						:class="{ 'list--active': isListUsed(list.id) }"
+						@click="useList(list.id)"
+					>
+						<i class="list__icon"><IconList /></i>
+						<span v-show="!collapse" v-text="list.name" />
+						<button
+							v-show="!collapse"
+							class="list__delete-button"
+							@click="openRemoveListModal(list.id)"
+						>
+							<i class="list__icon"><IconTrash /></i>
+						</button>
+					</button>
+				</li>
+			</ul>
+		</section>
 		<div class="sidebar__misc">
 			<SwitchColorTheme />
 		</div>
+		<NewListModal v-model="modals.newList.modalOpen" :callback="modals.newList.props.callback" />
+		<RemoveListModal
+			v-model="modals.removeList.modalOpen"
+			:id="modals.removeList.props.id"
+			:callback="modals.removeList.props.callback"
+		/>
 	</aside>
 </template>
 
@@ -26,10 +52,32 @@
 import Logo2DO4U from '@/components/icons/Logo2DO4U.vue';
 import LogoCollapsed2DO4U from '@/components/icons/LogoCollapsed2DO4U.vue';
 import IconAngles from '@/components/icons/IconAngles.vue';
-import IconHome from '@/components/icons/IconHome.vue';
+import IconPlus from '@/components/icons/IconPlus.vue';
+import IconList from '@/components/icons/IconList.vue';
+import IconTrash from '@/components/icons/IconTrash.vue';
 import SwitchColorTheme from '@/components/SwitchColorTheme.vue';
+import NewListModal from '@/components/modals/NewListModal.vue';
+import RemoveListModal from '@/components/modals/RemoveListModal.vue';
 
+import { computed, ref, reactive, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import { useVModel } from '@vueuse/core';
+import { useListsStore } from '@/stores/lists';
+
+interface IGenericModal<T = undefined> {
+	modalOpen: boolean;
+	props: T;
+}
+
+interface IModalProps {
+	id?: string;
+	callback?: (id?: string) => void;
+}
+
+interface IModals {
+	newList: IGenericModal<IModalProps>;
+	removeList: IGenericModal<IModalProps>;
+}
 
 const props = defineProps<{
 	modelValue: boolean;
@@ -40,6 +88,63 @@ const emit = defineEmits<{
 }>();
 
 const collapse = useVModel(props, 'modelValue', emit);
+const router = useRouter();
+const route = useRoute();
+const listsStore = useListsStore();
+
+const modals: IModals = reactive({
+	newList: {
+		modalOpen: false,
+		props: {
+			callback: undefined,
+		},
+	},
+	removeList: {
+		modalOpen: false,
+		props: {
+			id: undefined,
+			callback: undefined,
+		},
+	},
+});
+
+const todoLists = computed(() => {
+	return listsStore.getLists.map((list) => ({
+		id: list._id,
+		name: list.name,
+	}));
+});
+
+const openNewListModal = () => {
+	modals.newList.modalOpen = true;
+	modals.newList.props.callback = (id) => {
+		if (id) useList(id);
+	};
+};
+
+const openRemoveListModal = (id: string) => {
+	modals.removeList.props.id = id;
+	modals.removeList.modalOpen = true;
+	modals.removeList.props.callback = () => {
+		router.push({ name: 'Lists' });
+	};
+};
+
+const getLists = () => {
+	listsStore.GET_LISTS();
+};
+
+const isListUsed = (id: string) => {
+	return route.params.id === id;
+};
+
+const useList = (id: string) => {
+	router.push({ name: 'ListsViewList', params: { id } });
+};
+
+onMounted(() => {
+	getLists();
+});
 </script>
 
 <style lang="scss" scoped>
@@ -77,24 +182,12 @@ const collapse = useVModel(props, 'modelValue', emit);
 			margin-inline: 0rem;
 		}
 
-		#{$self}__navigation {
-			margin-inline: 0.75rem;
+		#{$self}__lists {
+			margin-inline: 0.875rem;
 		}
 
-		#{$self}__link {
-			justify-content: center;
-
-			background-color: var(--clr-secondary);
-
-			border-radius: 0.375rem;
-
-			&--active .link__icon {
-				color: var(--clr-bg-soft);
-			}
-
-			&::after {
-				display: none;
-			}
+		& .list {
+			padding-inline: unset;
 		}
 
 		#{$self}__button-collapse > svg {
@@ -134,68 +227,13 @@ const collapse = useVModel(props, 'modelValue', emit);
 		border-color: var(--clr-primary-dimm-2);
 	}
 
-	&__navigation {
+	&__lists {
 		display: flex;
 		flex-direction: column;
+		gap: 1rem;
+
 		margin-block: 1rem;
-		margin-inline-start: 1.5rem;
-	}
-
-	&__link {
-		position: relative;
-
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-
-		height: 2.5rem;
-
-		color: var(--clr-primary);
-
-		transition: all 150ms ease-in-out;
-
-		&:hover {
-			background-color: var(--clr-bg-soft-up);
-		}
-
-		&--active {
-			&::after {
-				content: '';
-
-				width: 0.25rem;
-				height: 100%;
-
-				margin-inline-start: auto;
-
-				background-color: var(--clr-secondary);
-			}
-
-			.link__icon {
-				color: var(--clr-secondary);
-			}
-		}
-
-		span {
-			font-size: 1rem;
-			font-weight: 700;
-			line-height: 1rem;
-			white-space: nowrap;
-			text-overflow: ellipsis;
-			overflow: hidden;
-		}
-
-		.link__icon {
-			margin: 0.25rem;
-
-			$size: 1.5rem;
-			height: $size;
-			width: $size;
-
-			& > svg {
-				width: inherit;
-				height: inherit;
-			}
-		}
+		margin-inline: 1rem;
 	}
 
 	&__misc {
@@ -243,6 +281,138 @@ const collapse = useVModel(props, 'modelValue', emit);
 			height: $size;
 			width: $size;
 			color: var(--clr-secondary);
+		}
+	}
+}
+
+.lists {
+	$self: &;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	list-style: none;
+
+	&__create-button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.25rem;
+
+		height: 2.25rem;
+		width: 100%;
+
+		background-color: var(--clr-secondary);
+		border-radius: 0.375rem;
+
+		color: var(--clr-text-inverse-1);
+		font-weight: 600;
+
+		transition: background-color 200ms ease-in-out;
+
+		&:hover {
+			background-color: var(--clr-secondary-dark);
+		}
+
+		#{$self}__icon {
+			display: grid;
+			place-items: center;
+
+			$size: 1.25rem;
+			height: $size;
+			width: $size;
+
+			svg {
+				width: inherit;
+				height: inherit;
+			}
+		}
+	}
+}
+
+.list {
+	$self: &;
+	flex: 1;
+	width: 100%;
+
+	position: relative;
+
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+
+	height: 2.25rem;
+	padding-inline: 0.5rem;
+
+	color: var(--clr-mute-darkest);
+
+	border-radius: 0.375rem;
+
+	transition: all 150ms ease-in-out;
+
+	&:hover {
+		background-color: var(--clr-bg-soft-down);
+	}
+
+	&--active {
+		color: var(--clr-primary);
+		background-color: var(--clr-bg-soft-up);
+
+		#{$self}__icon {
+			color: var(--clr-secondary);
+		}
+	}
+
+	span {
+		font-size: 1rem;
+		font-weight: 500;
+		line-height: 1rem;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		overflow: hidden;
+	}
+
+	&__delete-button {
+		margin-inline-start: auto;
+		display: grid;
+		place-items: center;
+		height: 2rem;
+
+		color: var(--clr-mute);
+
+		transition: scale 200ms ease-in-out;
+
+		&:hover {
+			scale: 1.1;
+		}
+
+		#{$self}__icon {
+			display: grid;
+			place-items: center;
+
+			$size: 1.5rem;
+			height: $size;
+			width: $size;
+
+			svg {
+				width: inherit;
+				height: inherit;
+			}
+		}
+	}
+
+	&__icon {
+		display: grid;
+		place-items: center;
+
+		color: var(--clr-mute);
+
+		$size: 2.25rem;
+		height: $size;
+		width: $size;
+
+		& > svg {
+			width: inherit;
+			height: inherit;
 		}
 	}
 }
