@@ -1,4 +1,9 @@
-import axios, { type AxiosInstance } from 'axios';
+import axios, { type AxiosInstance, type AxiosError, type AxiosResponse } from 'axios';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
+
+const router = useRouter();
+const authStore = useAuthStore();
 
 class Http {
 	public http: AxiosInstance;
@@ -10,7 +15,7 @@ class Http {
 				'Access-Control-Allow-Origin': '*',
 				'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
 				'Access-Control-Allow-Credentials': 'true',
-				'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+				'Access-Control-Allow-Headers': 'Content-Type, x-access-token',
 			},
 		});
 
@@ -19,39 +24,38 @@ class Http {
 
 	defineInterceptor() {
 		this.http.interceptors.response.use(
-			(response: any) => response,
-			(error: any) => {
-				// if (error.request.status && error.request.status === 401) {
-				// 	if (sessionStorage.getItem('token')) {
-				// 		sessionStorage.removeItem('token');
-				// 		store.dispatch(AUTH_LOGOUT);
-				// 		router.push({ name: 'Login' });
-				// 	}
-				// }
-				return Promise.reject(error);
+			(response: AxiosResponse) => response,
+			(error: AxiosError) => {
+				if (error.request.status === 401) {
+					if (authStore.isAutenticated) {
+						authStore.AUTH_LOGOUT();
+						router.push({ name: 'Login' });
+					}
+				}
+				return error;
 			},
 		);
 	}
 }
 
 export default class SingletonHttp {
-	static instance: Http;
+	static instance: AxiosInstance;
 
 	constructor() {
 		throw new Error('Use SingletonHttp.getInstance()');
 	}
 
 	static getInstance() {
-		if (!SingletonHttp.instance) {
-			SingletonHttp.instance = new Http();
+		if (!this.instance) {
+			const { http } = new Http();
+			this.instance = http;
 
-			if (sessionStorage.getItem('token')) {
-				SingletonHttp.instance.http.defaults.headers.common.Authorization = `Bearer ${sessionStorage.getItem(
-					'token',
-				)}`;
-			}
+			if (authStore.token) this.defineToken(authStore.token);
 		}
+		return this.instance;
+	}
 
-		return SingletonHttp.instance;
+	static defineToken(token: string) {
+		this.instance.defaults.headers.common['x-access-token'] = `Bearer ${token}`;
 	}
 }
