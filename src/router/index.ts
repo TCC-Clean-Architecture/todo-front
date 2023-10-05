@@ -8,21 +8,43 @@ const router = createRouter({
 			redirect: '/',
 		},
 		{
+			path: '/login',
+			name: 'Login',
+			component: () => import('../views/LoginView.vue'),
+			meta: { requiresAuth: false },
+		},
+		{
+			path: '/register',
+			name: 'Register',
+			component: () => import('../views/RegisterView.vue'),
+			meta: { requiresAuth: false },
+		},
+		{
 			path: '/lists',
 			alias: '/',
 			name: 'Lists',
 			component: () => import('../views/ListsView.vue'),
+			meta: { requiresAuth: true },
 			children: [
 				{
 					path: ':id',
 					name: 'ListsViewList',
 					component: () => import('../views/ListView.vue'),
+					meta: { requiresAuth: true },
 				},
 			],
 		},
 	],
 	linkActiveClass: 'link--active',
 	linkExactActiveClass: 'link--exact-active',
+});
+
+router.beforeEach((to, from, next) => {
+	if (to.meta.requiresAuth) {
+		// this route requires auth, check if logged in
+		// if not, redirect to login page.
+		next('login');
+	} else next();
 });
 
 export default router;
