@@ -89,6 +89,7 @@ export const useAuthStore = defineStore('auth', {
 		},
 		AUTH_LOGOUT() {
 			this.$reset();
+			this.token = null;
 		},
 	},
 });
