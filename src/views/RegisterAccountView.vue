@@ -205,6 +205,7 @@ const doRegister = () => {
 
 		background-color: var(--clr-bg-soft);
 		border-radius: 1.25rem;
+		box-shadow: $elevation-1;
 	}
 
 	&__logo {

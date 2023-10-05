@@ -1,6 +1,17 @@
 <template>
 	<main class="login">
-		<img class="login__background" :src="background" />
+		<div
+			class="login__background"
+			role="img"
+			aria-label="Background login image"
+			ref="background"
+			:style="{
+				backgroundImage: `url(${backgroundImg})`,
+				backgroundSize: `calc(100% + ${movementStrength * 2}px)`,
+				'--bg-pos-x': backgroundPosition.x,
+				'--bg-pos-y': backgroundPosition.y,
+			}"
+		></div>
 		<section class="login__content">
 			<div class="login__card">
 				<Logo2DO4U class="login__logo" />
@@ -55,11 +66,29 @@ import BasePassword from '@/components/BasePassword.vue';
 import BaseLoader from '@/components/BaseLoader.vue';
 
 import { ref, reactive, computed } from 'vue';
+import { useMouseInElement } from '@vueuse/core';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 
 const router = useRouter();
 const authStore = useAuthStore();
+
+const background = ref<HTMLDivElement>();
+const backgroundMouse = reactive(useMouseInElement(background));
+const movementStrength = 50;
+
+const backgroundPosition = computed(() => {
+	const height = movementStrength / backgroundMouse.elementHeight;
+	const width = movementStrength / backgroundMouse.elementWidth;
+
+	const elX = backgroundMouse.x - backgroundMouse.elementHeight / 2;
+	const elY = backgroundMouse.y - backgroundMouse.elementWidth / 2;
+
+	const posX = width * elX * -1 - movementStrength;
+	const posY = height * elY * -1 - movementStrength;
+
+	return { x: posX + 'px ', y: posY + 'px' };
+});
 
 interface IForm {
 	email: string | null;
@@ -80,7 +109,7 @@ const error = ref<ErrorsKeys>();
 
 const loading = ref<boolean>(false);
 
-const background = computed(() => backgroundImage);
+const backgroundImg = computed(() => backgroundImage);
 
 const doLogin = () => {
 	if (!form.email) {
@@ -124,9 +153,12 @@ const doLogin = () => {
 		isolation: isolate;
 		inset: 0;
 		z-index: 0;
+
 		width: 100vw;
 		height: 100vh;
-		object-fit: cover;
+
+		background-position-x: var(--bg-pos-x);
+		background-position-y: var(--bg-pos-y);
 	}
 
 	&__content {
@@ -150,6 +182,7 @@ const doLogin = () => {
 
 		background-color: var(--clr-bg-soft);
 		border-radius: 1.25rem;
+		box-shadow: $elevation-1;
 	}
 
 	&__logo {
