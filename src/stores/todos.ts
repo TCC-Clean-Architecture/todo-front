@@ -1,8 +1,8 @@
-import api from '@/utils/axios';
+import Http from '@/utils/axios';
 import type { AxiosError, AxiosResponse } from 'axios';
 import { defineStore } from 'pinia';
 
-const { http } = api.getInstance();
+const http = Http.getInstance();
 
 interface ITodo {
 	_id: string;

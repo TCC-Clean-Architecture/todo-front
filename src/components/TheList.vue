@@ -413,4 +413,3 @@ onMounted(() => {
 	}
 }
 </style>
-@/stores/lists

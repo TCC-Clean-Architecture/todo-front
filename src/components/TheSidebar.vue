@@ -37,7 +37,11 @@
 			</ul>
 		</section>
 		<div class="sidebar__misc">
-			<SwitchColorTheme />
+			<span class="sidebar__user" :title="authStore.username">L</span>
+			<SwitchColorTheme v-if="!collapse" />
+			<button v-if="!collapse" class="sidebar__logout" @click="doLogout()">
+				<IconSignOut />
+			</button>
 		</div>
 		<NewListModal v-model="modals.newList.modalOpen" :callback="modals.newList.props.callback" />
 		<RemoveListModal
@@ -55,14 +59,16 @@ import IconAngles from '@/components/icons/IconAngles.vue';
 import IconPlus from '@/components/icons/IconPlus.vue';
 import IconList from '@/components/icons/IconList.vue';
 import IconTrash from '@/components/icons/IconTrash.vue';
+import IconSignOut from '@/components/icons/IconSignOut.vue';
 import SwitchColorTheme from '@/components/SwitchColorTheme.vue';
 import NewListModal from '@/components/modals/NewListModal.vue';
 import RemoveListModal from '@/components/modals/RemoveListModal.vue';
 
-import { computed, ref, reactive, onMounted } from 'vue';
+import { computed, reactive, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useVModel } from '@vueuse/core';
 import { useListsStore } from '@/stores/lists';
+import { useAuthStore } from '@/stores/auth';
 
 interface IGenericModal<T = undefined> {
 	modalOpen: boolean;
@@ -91,6 +97,7 @@ const collapse = useVModel(props, 'modelValue', emit);
 const router = useRouter();
 const route = useRoute();
 const listsStore = useListsStore();
+const authStore = useAuthStore();
 
 const modals: IModals = reactive({
 	newList: {
@@ -140,6 +147,11 @@ const isListUsed = (id: string) => {
 
 const useList = (id: string) => {
 	router.push({ name: 'ListsViewList', params: { id } });
+};
+
+const doLogout = () => {
+	authStore.AUTH_LOGOUT();
+	router.push({ name: 'Login' });
 };
 
 onMounted(() => {
@@ -193,6 +205,13 @@ onMounted(() => {
 		#{$self}__button-collapse > svg {
 			rotate: 180deg;
 		}
+
+		#{$self}__misc {
+			margin-inline: 0.5rem;
+			justify-content: center;
+			padding: 0rem;
+			box-shadow: none;
+		}
 	}
 
 	&__wrapper {
@@ -239,8 +258,21 @@ onMounted(() => {
 	&__misc {
 		display: flex;
 		align-items: center;
-		justify-content: center;
+		justify-content: space-between;
+		gap: 0.5rem;
+
 		margin-block-start: auto;
+		margin-inline: 1rem;
+		padding: 0.5rem;
+
+		background-color: var(--clr-bg-soft);
+		box-shadow: $elevation-2;
+		border-radius: 100vw;
+		overflow: hidden;
+
+		& > * {
+			flex: 0 0 auto;
+		}
 	}
 
 	&__button-collapse {
@@ -281,6 +313,50 @@ onMounted(() => {
 			height: $size;
 			width: $size;
 			color: var(--clr-secondary);
+		}
+	}
+
+	&__user {
+		display: grid;
+		place-items: center;
+
+		width: 2.5rem;
+		height: 2.5rem;
+
+		color: var(--clr-secondary-contrast);
+		background-color: var(--clr-secondary);
+		border-radius: 100vw;
+
+		font-size: 1.5rem;
+		font-weight: bolder;
+		user-select: none;
+	}
+
+	&__logout {
+		width: 2.5rem;
+		height: 2.5rem;
+		padding: 0.25rem;
+
+		color: var(--clr-secondary);
+
+		background-color: var(--clr-bg-soft-up);
+		border-radius: 100vw;
+
+		transition: background-color 150ms ease-in-out;
+
+		&:hover {
+			background-color: var(--clr-secondary-lightest);
+
+			svg {
+				scale: 1.1;
+			}
+		}
+
+		svg {
+			transition: scale 150ms ease-in-out;
+
+			width: 100%;
+			height: 100%;
 		}
 	}
 }
