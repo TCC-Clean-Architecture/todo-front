@@ -178,7 +178,7 @@ const doLogin = () => {
 	}
 
 	&__form {
-		min-width: 260px;
+		width: max(260px, auto);
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -209,11 +209,6 @@ const doLogin = () => {
 			&:hover {
 				background-color: var(--clr-secondary-dark);
 			}
-		}
-
-		#{ $self }__forgot {
-			align-self: flex-start;
-			margin-inline: 0.5rem;
 		}
 
 		#{ $self }__error {
