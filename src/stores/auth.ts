@@ -1,6 +1,6 @@
 import Http from '@/utils/axios';
 import type { AxiosError, AxiosResponse } from 'axios';
-import { useSessionStorage, type RemovableRef } from '@vueuse/core';
+import { StorageSerializers, useSessionStorage, type RemovableRef } from '@vueuse/core';
 import { defineStore } from 'pinia';
 
 const http = Http.getInstance();
@@ -12,6 +12,8 @@ interface IUser {
 	token: string;
 }
 
+type IUserBasic = Pick<IUser, 'name' | 'email'>;
+
 interface IReponseMessage<T> {
 	content: T;
 	description: string;
@@ -22,7 +24,7 @@ interface IReponseMessage<T> {
 
 interface IListsStoreState {
 	token: RemovableRef<string | null>;
-	user?: Pick<IUser, 'name' | 'email'>;
+	user: RemovableRef<IUserBasic | null>;
 }
 
 interface IAuthRequestPayload {
@@ -39,7 +41,9 @@ interface IRegisterUserPayload {
 export const useAuthStore = defineStore('auth', {
 	state: (): IListsStoreState => ({
 		token: useSessionStorage<string | null>('token', null),
-		user: undefined,
+		user: useSessionStorage<IUserBasic | null>('user', null, {
+			serializer: StorageSerializers.object,
+		}),
 	}),
 	getters: {
 		isAutenticated: (state) => !!state.token,
@@ -90,6 +94,7 @@ export const useAuthStore = defineStore('auth', {
 		AUTH_LOGOUT() {
 			this.$reset();
 			this.token = null;
+			this.user = null;
 		},
 	},
 });
