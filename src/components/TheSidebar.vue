@@ -37,7 +37,7 @@
 			</ul>
 		</section>
 		<div class="sidebar__misc">
-			<span class="sidebar__user" :title="authStore.username">L</span>
+			<span class="sidebar__user" :title="authStore.username" v-text="userLetter" />
 			<SwitchColorTheme v-if="!collapse" />
 			<button v-if="!collapse" class="sidebar__logout" @click="doLogout()">
 				<IconSignOut />
@@ -113,6 +113,11 @@ const modals: IModals = reactive({
 			callback: undefined,
 		},
 	},
+});
+
+const userLetter = computed(() => {
+	if (authStore.username) return authStore.username[0];
+	return '?';
 });
 
 const todoLists = computed(() => {
