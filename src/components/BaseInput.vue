@@ -136,7 +136,7 @@ const hasLeadingIcon = computed(() => {
 });
 
 const hasTrailingIcon = computed(() => {
-	return slots['leading-icon'] || false;
+	return slots['trailing-icon'] || false;
 });
 
 const variantClass = computed(() => {
@@ -229,8 +229,7 @@ const onFocus = () => {
 			border-color 300ms;
 
 		&::placeholder {
-			color: $c-gray-70;
-			font-weight: 500;
+			color: $c-gray-60;
 		}
 	}
 
