@@ -13,9 +13,9 @@
 <script setup lang="ts">
 import TheSidebar from '@/components/TheSidebar.vue';
 
-import { useStorage } from '@vueuse/core';
+import { useSessionStorage } from '@vueuse/core';
 
-const collapsed = useStorage('sidebar-collapse', false, sessionStorage);
+const collapsed = useSessionStorage('sidebar-collapse', false);
 </script>
 
 <style lang="scss" scoped>
