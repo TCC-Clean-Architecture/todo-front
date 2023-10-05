@@ -17,8 +17,27 @@ const router = createRouter({
 		{
 			path: '/register',
 			name: 'Register',
+			redirect: () => ({ name: 'RegisterAccount' }),
 			component: () => import('../views/RegisterView.vue'),
 			meta: { requiresAuth: false },
+			children: [
+				{
+					path: 'account',
+					name: 'RegisterAccount',
+					component: () => import('../views/RegisterAccountView.vue'),
+					meta: { requiresAuth: false },
+				},
+				{
+					path: 'confirm',
+					name: 'RegisterConfirm',
+					beforeEnter: (to, from, next) => {
+						if (to.query.check === 'true') return next();
+						else next('/login');
+					},
+					component: () => import('../views/RegisterConfirmView.vue'),
+					meta: { requiresAuth: false },
+				},
+			],
 		},
 		{
 			path: '/lists',

@@ -3,47 +3,45 @@
 		<img class="login__background" :src="background" />
 		<section class="login__content">
 			<div class="login__card">
-				<div class="login__content">
-					<Logo2DO4U class="login__logo" />
-					<h1 class="login__title">Entrar</h1>
-					<p class="login__description">
-						Seja bem-vindo! Entre para<br />
-						organizar suas tarefas de forma fácil<br />
-						e rápida.
-					</p>
-					<form @submit.prevent class="login__form">
-						<BaseInput
-							class="login__user"
-							v-model="form.email"
-							:invalid="error === 'email' || error === 'loginFailed'"
-							variant="outline"
-							type="text"
-							name="user"
-							placeholder="Usuário"
-							required
-						/>
-						<BasePassword
-							class="login__password"
-							v-model="form.password"
-							:invalid="error === 'password' || error === 'loginFailed'"
-							variant="outline"
-							name="password"
-							placeholder="Senha"
-							required
-						/>
-						<p v-if="error && errors[error]" class="login__error" v-text="errors[error]"></p>
-						<button class="login__button" @click="doLogin()">
-							<Transition name="scale-up" mode="out-in">
-								<BaseLoader v-if="loading" variant="white" floating center />
-								<span v-else>Entrar</span>
-							</Transition>
-						</button>
-						<span class="login__go-signin">
-							Não é cadastrado?
-							<RouterLink to="register" class="login__link"> Registre-se aqui </RouterLink>
-						</span>
-					</form>
-				</div>
+				<Logo2DO4U class="login__logo" />
+				<h1 class="login__title">Entrar</h1>
+				<p class="login__description">
+					Seja bem-vindo! Entre para<br />
+					organizar suas tarefas de forma fácil<br />
+					e rápida.
+				</p>
+				<form @submit.prevent class="login__form">
+					<BaseInput
+						class="login__user"
+						v-model="form.email"
+						:invalid="error === 'email' || error === 'loginFailed'"
+						variant="outline"
+						type="text"
+						name="user"
+						placeholder="Usuário"
+						required
+					/>
+					<BasePassword
+						class="login__password"
+						v-model="form.password"
+						:invalid="error === 'password' || error === 'loginFailed'"
+						variant="outline"
+						name="password"
+						placeholder="Senha"
+						required
+					/>
+					<p v-if="error && errors[error]" class="login__error" v-text="errors[error]"></p>
+					<button class="login__button" @click="doLogin()">
+						<Transition name="scale-up" mode="out-in">
+							<BaseLoader v-if="loading" variant="white" floating center />
+							<span v-else>Entrar</span>
+						</Transition>
+					</button>
+					<span class="login__go-signin">
+						Não é cadastrado?
+						<RouterLink to="register" class="login__link"> Registre-se aqui </RouterLink>
+					</span>
+				</form>
 			</div>
 		</section>
 	</main>
@@ -146,17 +144,12 @@ const doLogin = () => {
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		width: fit-content;
+		padding: 4rem;
+
+		gap: 1.5rem;
+
 		background-color: var(--clr-bg-soft);
 		border-radius: 1.25rem;
-
-		#{$self}__content {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			padding: 4rem;
-			gap: 1.5rem;
-		}
 	}
 
 	&__logo {
@@ -181,7 +174,7 @@ const doLogin = () => {
 	}
 
 	&__form {
-		width: max(260px, auto);
+		width: max(260px);
 		display: flex;
 		flex-direction: column;
 		align-items: center;
