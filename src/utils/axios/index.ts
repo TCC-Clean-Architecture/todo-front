@@ -12,7 +12,7 @@ class Http {
 				'Access-Control-Allow-Origin': '*',
 				'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
 				'Access-Control-Allow-Credentials': 'true',
-				'Access-Control-Allow-Headers': 'Content-Type, x-access-token',
+				'Access-Control-Allow-Headers': 'Content-Type, X-Access-Token',
 			},
 		});
 
@@ -57,6 +57,6 @@ export default class SingletonHttp {
 	}
 
 	static defineToken(token: string) {
-		this.instance.defaults.headers.common['x-access-token'] = `Bearer ${token}`;
+		this.instance.defaults.headers.common['X-Access-Token'] = token;
 	}
 }
