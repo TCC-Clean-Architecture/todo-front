@@ -2,9 +2,6 @@ import axios, { type AxiosInstance, type AxiosError, type AxiosResponse } from '
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 
-const router = useRouter();
-const authStore = useAuthStore();
-
 class Http {
 	public http: AxiosInstance;
 
@@ -26,6 +23,9 @@ class Http {
 		this.http.interceptors.response.use(
 			(response: AxiosResponse) => response,
 			(error: AxiosError) => {
+				const authStore = useAuthStore();
+				const router = useRouter();
+
 				if (error.request.status === 401) {
 					if (authStore.isAutenticated) {
 						authStore.AUTH_LOGOUT();
@@ -50,7 +50,8 @@ export default class SingletonHttp {
 			const { http } = new Http();
 			this.instance = http;
 
-			if (authStore.token) this.defineToken(authStore.token);
+			const token = sessionStorage.getItem('token');
+			if (token) this.defineToken(token);
 		}
 		return this.instance;
 	}
