@@ -20,7 +20,7 @@
 		deselect-label=""
 		:placeholder="placeholder"
 		:loading="loading"
-		@update:model-value="$emit('update:model-value', $event)"
+		@update:model-value="$emit('update:modelValue', $event)"
 		@close="$emit('close')"
 		@open="openWrapper"
 	>
@@ -82,7 +82,7 @@ const props = withDefaults(defineProps<IProps>(), {
 /* -- Emits -- */
 
 const emit = defineEmits<{
-	(e: 'update:model-value', event: unknown): void;
+	(e: 'update:modelValue', event: unknown): void;
 	(e: 'close'): void;
 	(e: 'open'): void;
 	(e: 'wrapper-scroll', event: Event): void;
