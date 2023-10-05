@@ -15,7 +15,7 @@
 						<BaseInput
 							class="login__user"
 							v-model="form.email"
-							:invalid="errors.email || errors.login"
+							:invalid="error === 'email' || error === 'loginFailed'"
 							variant="outline"
 							type="text"
 							name="user"
@@ -25,16 +25,13 @@
 						<BasePassword
 							class="login__password"
 							v-model="form.password"
-							:invalid="errors.password || errors.login"
+							:invalid="error === 'password' || error === 'loginFailed'"
 							variant="outline"
 							name="password"
 							placeholder="Senha"
 							required
 						/>
-						<p v-if="errors.login" class="login__error">
-							Desculpe, não foi possível acessar sua conta. Por favor, verifique seu usuário ou
-							senha e tente novamente.
-						</p>
+						<p v-if="error && errors[error]" class="login__error" v-text="errors[error]"></p>
 						<button class="login__button" @click="doLogin()">
 							<Transition name="scale-up" mode="out-in">
 								<BaseLoader v-if="loading" variant="white" floating center />
@@ -65,33 +62,39 @@ import { useAuthStore } from '@/stores/auth';
 
 const router = useRouter();
 const authStore = useAuthStore();
-const form = reactive({ email: null, password: null });
-const errors = reactive({ email: false, password: false, login: false });
+
+interface IForm {
+	email: string | null;
+	password: string | null;
+}
+
+const form: IForm = reactive({ email: null, password: null });
+
+const errors = {
+	email: null,
+	password: null,
+	loginFailed:
+		'Desculpe, não foi possível acessar sua conta. Por favor, verifique seu usuário ou senha e tente novamente.',
+};
+type ErrorsKeys = keyof typeof errors;
+
+const error = ref<ErrorsKeys>();
 
 const loading = ref<boolean>(false);
 
 const background = computed(() => backgroundImage);
 
-const resetErrors = () => {
-	errors.email = false;
-	errors.password = false;
-	errors.login = false;
-};
-
 const doLogin = () => {
-	resetErrors();
-	loading.value = true;
-
 	if (!form.email) {
-		loading.value = false;
-		errors.email = true;
+		error.value = 'email';
 		return;
 	}
 	if (!form.password) {
-		loading.value = false;
-		errors.password = true;
+		error.value = 'password';
 		return;
 	}
+
+	loading.value = true;
 
 	const body = {
 		email: form.email,
@@ -104,7 +107,7 @@ const doLogin = () => {
 			router.push({ name: 'Lists' });
 		})
 		.catch(() => {
-			errors.login = true;
+			error.value = 'loginFailed';
 		})
 		.finally(() => {
 			loading.value = false;
