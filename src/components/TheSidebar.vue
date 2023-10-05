@@ -59,7 +59,7 @@ import SwitchColorTheme from '@/components/SwitchColorTheme.vue';
 import NewListModal from '@/components/modals/NewListModal.vue';
 import RemoveListModal from '@/components/modals/RemoveListModal.vue';
 
-import { computed, ref, reactive, onMounted } from 'vue';
+import { computed, reactive, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useVModel } from '@vueuse/core';
 import { useListsStore } from '@/stores/lists';
