@@ -45,7 +45,6 @@ const toggleDark = useToggle(isDark);
 	padding: $padding;
 
 	background-color: var(--clr-bg-soft-up);
-	box-shadow: $elevation-1;
 	border-radius: 100vw;
 
 	overflow: hidden;

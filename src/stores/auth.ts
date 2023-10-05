@@ -22,6 +22,7 @@ interface IReponseMessage<T> {
 
 interface IListsStoreState {
 	token: RemovableRef<string | null>;
+	user?: Pick<IUser, 'name' | 'email'>;
 }
 
 interface IAuthRequestPayload {
@@ -38,9 +39,12 @@ interface IRegisterUserPayload {
 export const useAuthStore = defineStore('auth', {
 	state: (): IListsStoreState => ({
 		token: useSessionStorage<string | null>('token', null),
+		user: undefined,
 	}),
 	getters: {
 		isAutenticated: (state) => !!state.token,
+		username: (state) => state.user?.name,
+		userEmail: (state) => state.user?.email,
 	},
 	actions: {
 		AUTH_REQUEST(body: IAuthRequestPayload): Promise<IUser> {
@@ -54,10 +58,16 @@ export const useAuthStore = defineStore('auth', {
 						const { content } = response.data;
 						this.token = content.token;
 						Http.defineToken(content.token);
+
+						this.user = {
+							name: content.name,
+							email: content.email,
+						};
+
 						resolve(content);
 					})
 					.catch((error: AxiosError) => {
-						this.token = null;
+						this.AUTH_LOGOUT();
 						reject(error);
 					});
 			});
