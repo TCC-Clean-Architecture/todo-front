@@ -2,10 +2,11 @@ version: '3.8'
 
 services:
   todo-front:
-    container_name: todo-front
+    image: todo-nca-front
+    container_name: todo-nca-front
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: container/Dockerfile
     volumes:
       - '.:/app'
       - '/app/node_modules'
