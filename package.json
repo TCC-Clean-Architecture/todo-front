@@ -1,9 +1,12 @@
 {
-  "name": "todo-front",
-  "version": "0.0.0",
+  "name": "2do4u-frontend-without-clean-architecture",
+  "version": "1.0.2",
+  "description": "Software criado para fins de pesquisa de TCC",
+  "main": "main.ts",
+  "license": "MIT",
   "private": true,
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host 0.0.0.0",
     "build": "run-p type-check build-only",
     "preview": "vite preview",
     "test:unit": "vitest",
